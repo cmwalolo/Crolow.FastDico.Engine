@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageId>Crolow.FastDico.Engine</PackageId>
+		<Version>1.0.0</Version>
+		<Authors>Laurent Lequenne</Authors>
+		<Description>Crolow.FastDico Scrabble engine package</Description>
+		<IncludeBuildOutput>false</IncludeBuildOutput>
+	</PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Crolow.Data.Bridge\Crolow.FastDico.Data.Bridge.csproj" />
+    <ProjectReference Include="..\Crolow.FastDico.Common\Crolow.FastDico.Common.csproj" />
+    <ProjectReference Include="..\Crolow.FastDico\Crolow.FastDico.csproj" />
+    <ProjectReference Include="..\Crolow.TopMachine.BackgroundServices\Crolow.FastDico.Builders.csproj" />
+    <ProjectReference Include="..\Crolow.TopMachine.Core\Crolow.TopMachine.Core.csproj" />
+    <ProjectReference Include="..\Kalow.Apps.Common\Kalow.Apps.Common.csproj" />
+  </ItemGroup>
+
+	<ItemGroup>
+		<!-- Include all referenced DLLs into the lib folder of the package -->
+		<Content Include="$(OutputPath)**\*.dll" Pack="true" PackagePath="lib\net8.0" />
+	</ItemGroup>	
+</Project>
