@@ -1,7 +1,7 @@
 ﻿using Crolow.FastDico.Data.Bridge.Entities.ScrabbleApi;
 using Kalow.Apps.Common.DataTypes;
 
-namespace Crolow.FastDico.Common.Interfaces.ScrabbleApi
+namespace Crolow.FastDico.Common.Interfaces.ScrabbleApi.Services
 {
     public interface IGameServiceLocal : IGameServiceBase
     {

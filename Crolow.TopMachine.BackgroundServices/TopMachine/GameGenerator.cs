@@ -1,8 +1,8 @@
 ﻿using Crolow.FastDico.Common.Interfaces.ScrabbleApi;
+using Crolow.FastDico.Common.Interfaces.ScrabbleApi.Services;
 using Crolow.FastDico.Common.Interfaces.Settings;
 using Crolow.FastDico.Common.Models.ScrabbleApi;
 using Crolow.FastDico.Common.Models.ScrabbleApi.Game;
-using Crolow.TopMachine.Core.Client.Facades;
 using Kalow.Apps.Common.Utils;
 using Microsoft.Extensions.Hosting;
 

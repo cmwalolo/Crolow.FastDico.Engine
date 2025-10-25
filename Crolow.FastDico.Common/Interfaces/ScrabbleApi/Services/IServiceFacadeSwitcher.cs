@@ -1,6 +1,4 @@
-﻿using Crolow.FastDico.Common.Interfaces.ScrabbleApi;
-
-namespace Crolow.TopMachine.Core.Client.Facades
+﻿namespace Crolow.FastDico.Common.Interfaces.ScrabbleApi.Services
 {
     public enum FacadeMode
     {

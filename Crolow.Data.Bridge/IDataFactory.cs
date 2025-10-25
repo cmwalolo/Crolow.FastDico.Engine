@@ -1,4 +1,5 @@
-﻿using Crolow.FastDico.Data.Bridge.Entities.ScrabbleApi;
+﻿using Crolow.FastDico.Common.Models.ScrabbleApi.Entities;
+using Crolow.FastDico.Data.Bridge.Entities.ScrabbleApi;
 using Crolow.TopMachine.Core.Entities.Lists;
 using Crolow.TopMachine.Data.Bridge.Entities.Definitions;
 using Crolow.TopMachine.Data.Bridge.Entities.Dictionaries;
@@ -14,6 +15,7 @@ public interface IDataFactory
     IDataManager<ILetterConfigModel> LetterConfigs { get; }
     IDataManager<IBoardGridModel> Boards { get; }
     IDataManager<IGameConfigModel> Games { get; }
+    IDataManager<IGameRollerConfigModel> GameRollers { get; }
     IDataManager<IDictionaryModel> Dictionaries { get; }
     IGamePoolDataManager<IGameDetailModel> GamePool { get; }
     IGameUsersDataManager<IGameUserDetailModel> UserGames { get; }

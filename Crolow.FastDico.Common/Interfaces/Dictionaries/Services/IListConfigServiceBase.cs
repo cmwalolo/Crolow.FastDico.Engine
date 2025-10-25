@@ -1,7 +1,7 @@
 ﻿using Crolow.TopMachine.Core.Entities.Lists;
 using Crolow.TopMachine.Data.Bridge.Entities.Lists;
 
-namespace Crolow.FastDico.Common.Interfaces.Dictionaries
+namespace Crolow.FastDico.Common.Interfaces.Dictionaries.Services
 {
     public interface IListConfigServiceBase
     {

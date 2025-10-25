@@ -1,10 +1,10 @@
 ﻿using Crolow.FastDico.Builders.TopMachine;
 using Crolow.FastDico.Common.Interfaces.ScrabbleApi;
+using Crolow.FastDico.Common.Interfaces.ScrabbleApi.Services;
 using Crolow.FastDico.Common.Interfaces.Settings;
 using Crolow.FastDico.Common.Models.ScrabbleApi.Game;
 using Crolow.FastDico.Data.Bridge.Entities.ScrabbleApi;
 using Crolow.FastDico.ScrabbleApi.Extensions;
-using Crolow.TopMachine.Core.Client.Facades;
 using System.Text;
 
 namespace Crolow.FastDico.ScrabbleApi;

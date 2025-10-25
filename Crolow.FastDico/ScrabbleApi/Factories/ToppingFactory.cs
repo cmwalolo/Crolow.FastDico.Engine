@@ -1,5 +1,6 @@
 ﻿using Crolow.FastDico.Builders.TopMachine;
 using Crolow.FastDico.Common.Interfaces.ScrabbleApi;
+using Crolow.FastDico.Common.Interfaces.ScrabbleApi.Services;
 using Crolow.FastDico.Common.Interfaces.Settings;
 using Crolow.FastDico.Common.Interfaces.Users;
 using Crolow.FastDico.Common.Models.ScrabbleApi;
@@ -8,7 +9,6 @@ using Crolow.FastDico.Data.Bridge.Entities.ScrabbleApi;
 using Crolow.FastDico.ScrabbleApi.Components.BoardSolvers;
 using Crolow.FastDico.ScrabbleApi.Components.Rounds;
 using Crolow.FastDico.ScrabbleApi.Utils;
-using Crolow.TopMachine.Core.Client.Facades;
 using Kalow.Apps.Common.DataTypes;
 
 namespace Crolow.FastDico.ScrabbleApi.Factories

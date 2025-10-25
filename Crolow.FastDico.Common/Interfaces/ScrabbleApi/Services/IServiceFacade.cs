@@ -1,6 +1,6 @@
-﻿using Crolow.FastDico.Common.Interfaces.Dictionaries;
+﻿using Crolow.FastDico.Common.Interfaces.Dictionaries.Services;
 
-namespace Crolow.FastDico.Common.Interfaces.ScrabbleApi
+namespace Crolow.FastDico.Common.Interfaces.ScrabbleApi.Services
 {
     public interface IServiceFacadeLocal : IServiceFacade
     {

@@ -1,8 +1,8 @@
 ﻿using Crolow.FastDico.Common.Interfaces.Dictionaries;
 using Crolow.FastDico.Common.Interfaces.Lists;
+using Crolow.FastDico.Common.Interfaces.ScrabbleApi.Services;
 using Crolow.FastDico.Common.Interfaces.Settings;
 using Crolow.FastDico.GadDag;
-using Crolow.TopMachine.Core.Client.Facades;
 using Crolow.TopMachine.Core.Entities.Lists;
 using Crolow.TopMachine.Data.Bridge.Entities.Lists;
 using Crolow.TopMachine.Data.Bridge.Enums;

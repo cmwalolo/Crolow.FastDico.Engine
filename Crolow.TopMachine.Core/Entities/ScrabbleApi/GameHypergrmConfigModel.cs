@@ -20,16 +20,4 @@ namespace Crolow.FastDico.Common.Models.ScrabbleApi.Entities
         public bool JokerMode { get; set; }
         public string LettersOnRack { get; set; }
     }
-
-
-    public class GameRollerConfigModel : DataObject
-    {
-        public GameRollerConfigModel()
-        {
-        }
-        public string Name { get; set; }
-        public KalowId GameConfigId { get; set; }
-        public int NumberOfRounds { get; set; }
-
-    }
 }

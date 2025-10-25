@@ -1,9 +1,9 @@
 ﻿using Crolow.FastDico.Common.Interfaces.Dictionaries;
 using Crolow.FastDico.Common.Interfaces.ScrabbleApi;
+using Crolow.FastDico.Common.Interfaces.ScrabbleApi.Services;
 using Crolow.FastDico.Common.Interfaces.Settings;
 using Crolow.FastDico.Common.Models.Dictionary;
 using Crolow.FastDico.ScrabbleApi.Config;
-using Crolow.TopMachine.Core.Client.Facades;
 using Crolow.TopMachine.Data.Bridge.Entities.ScrabbleApi;
 using Kalow.Apps.Common.DataTypes;
 
