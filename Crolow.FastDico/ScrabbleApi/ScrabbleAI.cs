@@ -24,6 +24,7 @@ public class ScrabbleAI : IScrabbleAI
 
     public async Task StartGame()
     {
+        CurrentGame.ControllersSetup.Validator.Initialize();
         await NextRound();
     }
     public async Task<bool> NextRound()
@@ -33,7 +34,6 @@ public class ScrabbleAI : IScrabbleAI
             using (StopWatcher stopwatch = new StopWatcher("New round"))
             {
                 CurrentGame.ControllersSetup.BoardSolver.Initialize();
-                CurrentGame.ControllersSetup.Validator.Initialize();
 
                 PlayedRounds playedRounds = null;
                 var letters = new List<Tile>();
@@ -43,9 +43,9 @@ public class ScrabbleAI : IScrabbleAI
                 var originalRack = new PlayerRack(CurrentGame.GameObjects.GameRack);
                 var originalBag = new LetterBag(CurrentGame.GameObjects.GameLetterBag);
 
+                CurrentGame.ControllersSetup.Validator.InitializeRound();
                 while (true)
                 {
-                    CurrentGame.ControllersSetup.Validator.InitializeRound();
                     letters = CurrentGame.ControllersSetup.Validator.InitializeLetters(originalRack.Tiles.ToList());
                     // End Test
                     if (letters == null)
@@ -105,14 +105,34 @@ public class ScrabbleAI : IScrabbleAI
                 CurrentGame.GameObjects.GameStatus = GameStatus.WaitingForNextRound;
             }
 
+
             if (RoundIsReady != null)
             {
-                RoundIsReady.Invoke();
-                return true;
+                if (CurrentGame.GameObjects.MaxRounds == 0 || CurrentGame.GameObjects.MaxRounds - 1 == CurrentGame.GameObjects.Round)
+                {
+                    RoundIsReady.Invoke();
+                    return true;
+                }
+                else
+                {
+                    SetRound();
+                }
             }
             else
             {
                 SetRound();
+
+                if (CurrentGame.GameObjects.MaxRounds != 0 && CurrentGame.GameObjects.MaxRounds == CurrentGame.GameObjects.Round)
+                {
+                    EndGame();
+                    return false;
+                }
+
+            }
+
+            if (CurrentGame.GameObjects.GameStatus == GameStatus.GameEnded)
+            {
+                return false;
             }
         }
         return false;
@@ -170,6 +190,7 @@ public class ScrabbleAI : IScrabbleAI
         }
 
         CurrentGame.GameObjects.Round++;
+
 #if DEBUG
         CurrentGame.GameObjects.GameLetterBag.DebugBag(CurrentGame, selectedRound.Rack);
 #endif

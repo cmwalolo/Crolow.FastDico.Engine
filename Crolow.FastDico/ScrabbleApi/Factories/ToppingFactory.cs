@@ -74,7 +74,7 @@ namespace Crolow.FastDico.ScrabbleApi.Factories
 
             CurrentGame.GameObjects.Configuration = playConfiguration;
             CurrentGame.GameObjects.GameConfig = playConfiguration.SelectedConfig;
-
+            CurrentGame.GameObjects.MaxRounds = container.MaxRounds;
             CurrentGame.GameObjects.Board = new Board(CurrentGame.GameObjects);
             CurrentGame.GameObjects.GameLetterBag = new LetterBag(CurrentGame.GameObjects);
             CurrentGame.GameObjects.GameRack = new PlayerRack();
@@ -85,11 +85,11 @@ namespace Crolow.FastDico.ScrabbleApi.Factories
 
             if (CurrentGame.GameObjects.GameConfig.DifficultMode)
             {
-                CurrentGame.ControllersSetup.Validator = new XRoundValidator(CurrentGame);
+                CurrentGame.ControllersSetup.Validator = new XRoundValidator(CurrentGame, container.Filters);
             }
             else
             {
-                CurrentGame.ControllersSetup.Validator = new BaseRoundValidator(CurrentGame);
+                CurrentGame.ControllersSetup.Validator = new BaseRoundValidator(CurrentGame, container.Filters);
             }
 
             CurrentGame.ControllersSetup.ScrabbleEngine = new ScrabbleAI(CurrentGame);
@@ -100,7 +100,7 @@ namespace Crolow.FastDico.ScrabbleApi.Factories
 
         public async Task<CurrentGame> ConvertToViewAsync(CurrentGame game)
         {
-            game.ControllersSetup.Validator = new BaseRoundValidator(game);
+            game.ControllersSetup.Validator = new BaseRoundValidator(game, null);
             return game;
         }
 
@@ -120,6 +120,7 @@ namespace Crolow.FastDico.ScrabbleApi.Factories
             var playConfiguration = new ConfigLoader().ReadConfiguration(configContainer, CurrentGame.ControllersSetup.DictionaryContainer);
             CurrentGame.ControllersSetup.DictionaryContainer = await dictionaryContainerFactory.GetContainer(configContainer.GameConfig.Dictionary);
 
+            CurrentGame.GameObjects.MaxRounds = configContainer.MaxRounds;
             CurrentGame.GameObjects.Rounds = new GameDetail(null);
             CurrentGame.GameObjects.UserRounds = new GameDetail(configContainer.UserClient);
 

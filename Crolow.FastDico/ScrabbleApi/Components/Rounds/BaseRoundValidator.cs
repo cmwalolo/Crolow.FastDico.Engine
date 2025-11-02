@@ -11,22 +11,37 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds
     public class BaseRoundValidator : IBaseRoundValidator
     {
         public CurrentGame currentGame;
-        public BaseRoundValidator(CurrentGame currentGame)
+
+        public SolverFilters Filters = new SolverFilters();
+        public BaseRoundValidator(CurrentGame currentGame, SolverFilters filters)
         {
             this.currentGame = currentGame;
+            if (filters != null) Filters = filters;
         }
 
         int maxIterations = 3;
         public virtual void Initialize()
         {
-            if (currentGame.ControllersSetup.ReferenceDictionaryContainer != null)
+
+            // If the game has letter restrictions 
+            // We remove each defined letter from the bag
+            if (Filters.LettersInRack.Count > 0 || Filters.MandatoryLettersInRack.Count > 0)
             {
-                maxIterations = 15;
+                var l = Filters.LettersInRack.ToList();
+                l.AddRange(Filters.MandatoryLettersInRack);
+                foreach (var t in l)
+                {
+                    currentGame.GameObjects.GameLetterBag.RemoveTile(t);
+                }
             }
         }
 
         public virtual void InitializeRound()
         {
+            if (currentGame.ControllersSetup.ReferenceDictionaryContainer != null)
+            {
+                maxIterations = 15;
+            }
         }
 
         public virtual bool IsValidGame()
@@ -43,7 +58,24 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds
         public virtual List<Tile> InitializeLetters(List<Tile> rack)
         {
             var reject = this.CanRejectBagByDefault(currentGame.GameObjects.GameLetterBag, rack);
-            return currentGame.GameObjects.GameLetterBag.DrawLetters(currentGame, rack, reject: reject);
+
+            if (Filters.ForceStartBoostRound != 0 && currentGame.GameObjects.Round == Filters.ForceStartBoostRound - 1)
+            {
+                rack = new List<Tile>();
+                if (Filters.MandatoryLettersInRack.Count > 0)
+                {
+                    rack.AddRange(Filters.MandatoryLettersInRack);
+                }
+
+                if (Filters.LettersInRack.Count > 0)
+                {
+                    rack.Add(Filters.LettersInRack[Random.Shared.Next(Filters.LettersInRack.Count)]);
+                }
+
+                return currentGame.GameObjects.GameLetterBag.DrawLetters(currentGame, rack, reject: reject, forceInitialTiles: true);
+            }
+
+            return currentGame.GameObjects.GameLetterBag.DrawLetters(currentGame, rack, reject: reject, forceInitialTiles: false);
         }
         public virtual PlayedRounds GetRound(List<Tile> letters, SolverFilters filters = null)
         {
@@ -85,8 +117,10 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds
 
         public virtual SolverFilters InitializeFilters(bool pickAll = false)
         {
-            return new SolverFilters { PickallResults = pickAll };
+            Filters.PickallResults = pickAll;
+            return Filters;
         }
+
         public virtual PlayableSolution FinalizeRound(PlayedRounds playedRounds)
         {
             if (playedRounds.Tops.Count == 0)

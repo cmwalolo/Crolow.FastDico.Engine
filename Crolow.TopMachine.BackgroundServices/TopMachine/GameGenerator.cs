@@ -75,14 +75,10 @@ namespace Crolow.TopMachine.Builders.TopMachine
                             {
                                 await Task.Run(async () =>
                                 {
-                                    //                                    var dictionaryContainer = DictionaryContainerFactory.GetContainer(gameConfig.Dictionary);
-                                    BufferedConsole.ClearBuffer();
-                                    game = await factory.CreateGameAsync(container);
-                                    await game.ControllersSetup.ScrabbleEngine.StartGame();
-                                    game.ControllersSetup.ScrabbleViewEngine.SerializeGame();
-#if DEBUG
-                                    //  game.ControllersSetup.ScrabbleViewEngine.ExportHtml();
-#endif
+                                    game = await InitializeGameAsync(container);
+                                    game = await GenerateGameAsync(game);
+                                    game.ControllersSetup.ScrabbleViewEngine.SerializeGame(true);
+
                                     if (game != null)
                                     {
                                         game = null;
@@ -127,6 +123,20 @@ namespace Crolow.TopMachine.Builders.TopMachine
                     }
                 }
             }
+        }
+
+
+        public async Task<CurrentGame> InitializeGameAsync(ToppingConfigurationContainer container)
+        {
+            BufferedConsole.ClearBuffer();
+            CurrentGame game = await ToppingFactory.CreateGameAsync(container);
+            return game;
+        }
+
+        public async Task<CurrentGame> GenerateGameAsync(CurrentGame game)
+        {
+            await game.ControllersSetup.ScrabbleEngine.StartGame();
+            return game;
         }
 
         public static void Start()

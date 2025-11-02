@@ -25,16 +25,25 @@ public class ScrabbleAIViewer : IScrabbleAIViewer
         this.gameSerializer = gameSerializer;
         this.facade = facade;
     }
-    public async void SerializeGame()
+    public async Task<IGameDetailModel> SerializeGame(bool storeGame)
     {
         currentLoadedGame = gameSerializer.GetGame(CurrentGame);
-        facade.Current.GameService.UpdateGameAsync(currentLoadedGame);
+        if (storeGame)
+        {
+            facade.Current.GameService.UpdateGameAsync(currentLoadedGame);
+        }
+
+        return currentLoadedGame;
     }
 
     public async void SerializeUser()
     {
         var userModel = gameSerializer.GetGameUser(currentLoadedGame, CurrentGame);
         facade.Current.GameService.UpdateUserGameAsync(currentLoadedGame, userModel);
+        if (CurrentGame.History.Users == null)
+        {
+            CurrentGame.History.Users = new List<IGameUserDetailModel>();
+        }
         CurrentGame.History.Users.Add(userModel);
     }
 

@@ -24,12 +24,18 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds
         private RatingRound bestRate;
         private PlayedRounds bestRounds;
 
-        public XRoundValidator(CurrentGame currentGame) : base(currentGame)
+        public XRoundValidator(CurrentGame currentGame, SolverFilters filters) : base(currentGame, filters)
         {
             evaluator = new Evaluator(currentGame);
         }
 
+
         public override void Initialize()
+        {
+            base.Initialize();
+        }
+
+        public override void InitializeRound()
         {
             currentIteration = 0;
             maxIteration = new int[] { 2 };
@@ -40,35 +46,40 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds
             bestRounds = null;
         }
 
-        public virtual void InitializeRound()
+        public override bool IsValidGame()
         {
-        }
-
-        public virtual bool IsValidGame()
-        {
-            return evaluator.IsBoosted() || currentIteration == maxIteration.Length;
+            return evaluator.IsBoosted() || maxIteration[maxIteration.Count() - 1] > 0;
         }
 
         public override List<Tile> InitializeLetters(List<Tile> rack)
         {
             var reject = this.CanRejectBagByDefault(currentGame.GameObjects.GameLetterBag, rack);
 
+            if (Filters.ForceStartBoostRound != 0)
+            {
+                //if (currentGame.GameObjects.Round < Filters.ForceStartBoostRound - 1)
+                {
+                    return base.InitializeLetters(rack);
+                }
+            }
+
             // This one is only used for backup if no
-            // boosted solution found
+            // boosted solution found or if the BoostSequence didn't trigger
             if (!evaluator.IsBoosted())
             {
                 return currentGame.GameObjects.GameLetterBag.DrawLetters(currentGame, rack, reject: reject);
             }
             else
             {
-                var min = currentGame.GameObjects.GameConfig.InRackLetters;
+                var min = Math.Max(Filters.MinimalRack, currentGame.GameObjects.GameConfig.InRackLetters);
                 var max = currentGame.GameObjects.GameLetterBag.RemainingLetters;
                 if (max < min) max = min;
+
                 max = (int)Random.Shared.Next(min, (int)max);
 
 #if DEBUG
                 BufferedConsole.WriteLine($"Boosting with {max} letters");
-#endif 
+#endif
                 var letters = currentGame.GameObjects.GameLetterBag.DrawLetters(currentGame, rack, max, reject);
                 if (letters != null)
                 {
@@ -83,9 +94,8 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds
 
         public override SolverFilters InitializeFilters(bool pickAll = false)
         {
-            SolverFilters f = new SolverFilters();
-            f.PickallResults = evaluator.IsBoosted();
-            return f;
+            Filters.PickallResults = evaluator.IsBoosted();
+            return Filters;
         }
 
         public override bool CanRejectBagByDefault(LetterBag bag, List<Tile> rack)
@@ -95,6 +105,12 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds
 
         public override PlayedRounds ValidateRound(PlayedRounds rounds, List<Tile> letters, IBoardSolver solver)
         {
+            if (Filters.ForceStartBoostRound != 0 && currentGame.GameObjects.Round < Filters.ForceStartBoostRound - 1)
+            {
+                currentIteration = maxIteration.Count();
+                return base.ValidateRound(rounds, letters, solver);
+            }
+
             if (solver is null)
             {
                 throw new ArgumentNullException(nameof(solver));

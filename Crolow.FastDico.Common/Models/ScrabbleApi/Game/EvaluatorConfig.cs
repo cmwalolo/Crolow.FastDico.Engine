@@ -15,15 +15,16 @@ namespace Crolow.FastDico.Common.Models.ScrabbleApi.Game
         public float AppuiRatioMul { get; set; } = 15f;
 
         // --- Frequencies ---
-        public int ScrabbleFrequence { get; set; } = 60;
+        public int ScrabbleFrequence { get; set; } = 100;
         public int AppuisFrequence { get; set; } = 80;
         public int CollagesFrequence { get; set; } = 80;
         public int RaccordsFrequence { get; set; } = 80;
         public int RackFrequence { get; set; } = 40;
-        public int BoostFrequence { get; set; } = -1;
+        public int BoostFrequence { get; set; } = 80;
         public int SkipFrequence { get; set; } = 10;
         public int StartBoostRound { get; set; } = 2;
         public int StartBoostFrequence { get; set; } = 30;
+
 
     }
 }

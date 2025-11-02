@@ -25,6 +25,8 @@ namespace Crolow.FastDico.Common.Interfaces.ScrabbleApi.Services
         public ILetterServiceBase LetterService { get; set; }
         public IDictionaryServiceBase DictionaryService { get; set; }
         public IGameServiceBase GameService { get; set; }
+        public IGameRollerConfigServiceBase GameRollerConfigService { get; set; }
+
 
     }
 }

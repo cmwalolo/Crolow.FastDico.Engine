@@ -10,7 +10,7 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds
     {
         private IGameDetailModel game;
         private List<IGameUserDetailModel> history;
-        public ReplayRoundValidator(CurrentGame currentGame, IGameDetailModel game) : base(currentGame)
+        public ReplayRoundValidator(CurrentGame currentGame, IGameDetailModel game) : base(currentGame, null)
         {
             this.game = game;
         }
@@ -52,7 +52,8 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds
 
         public virtual SolverFilters InitializeFilters(bool pickAll = false)
         {
-            return new SolverFilters { PickallResults = pickAll };
+            Filters.PickallResults = pickAll;
+            return Filters;
         }
 
         /// <param name="playedRounds"></param>

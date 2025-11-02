@@ -54,7 +54,7 @@ public static class LetterBagExtensions
         return drawnLetters;
     }
 
-    public static List<Tile> DrawLetters(this LetterBag b, CurrentGame game, List<Tile> inRackTiles, int totalLetters = 0, bool reject = false)
+    public static List<Tile> DrawLetters(this LetterBag b, CurrentGame game, List<Tile> inRackTiles, int totalLetters = 0, bool reject = false, bool forceInitialTiles = false)
     {
         // Can we still make a valid rack ?
         if (!b.IsValid(game))
@@ -71,18 +71,21 @@ public static class LetterBagExtensions
         var drawnLetters = inRackTiles.ToList();
 
         // Can we by default reject the rack ?
-        if (reject && !b.IsRackValid(game, drawnLetters))
+        if (!forceInitialTiles && (reject && !b.IsRackValid(game, drawnLetters)))
         {
             drawnLetters = new List<Tile>();
         }
 
         // We remove from the bagLetters the existing rack
-        foreach (var t in drawnLetters)
+        if (!forceInitialTiles)
         {
-            var ndx = bagLetters.FindIndex(b => b.Equals(t));
-            if (ndx >= 0)
+            foreach (var t in drawnLetters)
             {
-                bagLetters.RemoveAt(ndx);
+                var ndx = bagLetters.FindIndex(b => b.Equals(t));
+                if (ndx >= 0)
+                {
+                    bagLetters.RemoveAt(ndx);
+                }
             }
         }
 
@@ -95,6 +98,11 @@ public static class LetterBagExtensions
             {
                 bagLetters = b.Letters.ToList();
                 drawnLetters = new List<Tile>();
+
+                if (forceInitialTiles)
+                {
+                    drawnLetters.AddRange(inRackTiles);
+                }
             }
 
 
@@ -148,6 +156,31 @@ public static class LetterBagExtensions
             return;
         }
         b.Letters.RemoveAt(i);
+    }
+
+    public static Tile RemoveTile(this LetterBag b, byte letter)
+    {
+        var i = b.Letters.FindIndex(t => t.Letter == letter || letter == TilesUtils.JokerByte && t.IsJoker);
+        if (i == -1)
+        {
+            return new Tile();
+        }
+        var t = b.Letters[i];
+        b.Letters.RemoveAt(i);
+        return t;
+    }
+
+    public static void RemoveTiles(this LetterBag b, List<Tile> tiles)
+    {
+        foreach (var tile in tiles)
+        {
+            var i = b.Letters.FindIndex(t => (!tile.IsJoker && !t.IsJoker && t.Letter == tile.Letter) || t.IsJoker && tile.IsJoker);
+            if (i == -1)
+            {
+                continue;
+            }
+            b.Letters.RemoveAt(i);
+        }
     }
 
     // Get the number of letters remaining in the bag

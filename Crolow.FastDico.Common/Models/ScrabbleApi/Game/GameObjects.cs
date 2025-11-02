@@ -31,6 +31,7 @@ public class GameObjects
     public PlayConfiguration Configuration { get; set; }
     public int Round { get; set; }
 
+    public int MaxRounds { get; set; }
     public GameDetail Rounds { get; set; }
     public GameDetail UserRounds { get; set; }
 

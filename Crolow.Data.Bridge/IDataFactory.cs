@@ -1,4 +1,4 @@
-﻿using Crolow.FastDico.Common.Models.ScrabbleApi.Entities;
+﻿using Crolow.FastDico.Data.Bridge.Entities.Puzzling;
 using Crolow.FastDico.Data.Bridge.Entities.ScrabbleApi;
 using Crolow.TopMachine.Core.Entities.Lists;
 using Crolow.TopMachine.Data.Bridge.Entities.Definitions;

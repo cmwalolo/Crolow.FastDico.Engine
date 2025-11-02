@@ -1,4 +1,4 @@
-﻿using Crolow.FastDico.Common.Models.ScrabbleApi.Entities;
+﻿using Crolow.FastDico.Data.Bridge.Entities.Puzzling;
 using Kalow.Apps.Common.DataTypes;
 
 namespace Crolow.FastDico.Common.Interfaces.ScrabbleApi.Services

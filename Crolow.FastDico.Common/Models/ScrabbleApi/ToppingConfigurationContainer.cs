@@ -1,4 +1,5 @@
 ﻿using Crolow.FastDico.Common.Interfaces.Users;
+using Crolow.FastDico.Common.Models.ScrabbleApi.Game;
 using Crolow.FastDico.Data.Bridge.Entities.ScrabbleApi;
 using Crolow.TopMachine.Data.Bridge.Entities.ScrabbleApi;
 
@@ -14,11 +15,14 @@ public class ToppingConfigurationContainer
         UserClient = client;
     }
 
+    public SolverFilters Filters { get; set; } = new SolverFilters();
+
     public IGameConfigModel GameConfig { get; set; }
     public IBoardGridModel BoardGrid { get; set; }
     public IUserClient UserClient { get; set; }
     public bool IsValid { get; set; }
     public int Count { get; set; }
+    public int MaxRounds { get; set; }
 
     public IGameUserStatisticsModel Statistics { get; set; }
 }

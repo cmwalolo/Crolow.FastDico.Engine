@@ -97,7 +97,7 @@ namespace Crolow.FastDico.Builders.TopMachine
                         PlayedTime = round.PlayedTime,
                         Points = round.Points,
                         Position = round.Position.GetPosition(),
-                        Rack = round.Rack.GetString(tilesUtils),
+                        Rack = ground.Rack,
                         TotalPlayedTime = totalTime,
                         TotalPoints = totalPoints,
                         Word = round.GetWord(tilesUtils)

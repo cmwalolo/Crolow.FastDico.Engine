@@ -1,5 +1,5 @@
-﻿using Crolow.TopMachine.Data.Bridge.DataObjects;
-using Crolow.TopMachine.Data.Bridge.Entities.ScrabbleApi;
+﻿using Crolow.FastDico.Data.Bridge.Entities.Puzzling;
+using Crolow.TopMachine.Data.Bridge.DataObjects;
 using Kalow.Apps.Common.DataTypes;
 
 namespace Crolow.FastDico.Common.Models.ScrabbleApi.Entities

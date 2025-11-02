@@ -1,6 +1,7 @@
-﻿using Kalow.Apps.Common.DataTypes;
+﻿using Crolow.TopMachine.Data.Bridge;
+using Kalow.Apps.Common.DataTypes;
 
-namespace Crolow.TopMachine.Data.Bridge.Entities.ScrabbleApi
+namespace Crolow.FastDico.Data.Bridge.Entities.Puzzling
 {
     public interface IGameHypergramConfigModel : IDataObject
     {

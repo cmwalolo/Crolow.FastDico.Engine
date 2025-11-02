@@ -84,6 +84,8 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds.Evaluators
                     this.config.SkipFrequence = 10;
                     this.config.StartBoostFrequence = 30;
                 }
+
+                currentGame.GameObjects.GameConfig.BoostConfig = this.config;
             }
         }
 
