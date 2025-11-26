@@ -44,6 +44,11 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds
             evaluator.Initialize();
             bestRate = null;
             bestRounds = null;
+
+            if (Filters.MandatoryLettersInRack.Count > 0 || Filters.LettersInRack.Count > 0)
+            {
+                evaluator.BoostedOff();
+            }
         }
 
         public override bool IsValidGame()
@@ -67,7 +72,8 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds
             // boosted solution found or if the BoostSequence didn't trigger
             if (!evaluator.IsBoosted())
             {
-                return currentGame.GameObjects.GameLetterBag.DrawLetters(currentGame, rack, reject: reject);
+                return base.InitializeLetters(rack);
+                //return currentGame.GameObjects.GameLetterBag.DrawLetters(currentGame, rack, reject: reject);
             }
             else
             {
