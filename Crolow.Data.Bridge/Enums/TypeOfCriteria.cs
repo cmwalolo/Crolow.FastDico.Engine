@@ -6,6 +6,8 @@
         StartsWith = 1,
         Contains = 2,
         EndsWith = 3,
-        Regex = 4
+        Regex = 4,
+        BeforeExtension = 5,
+        AfterExtension = 6
     }
 }

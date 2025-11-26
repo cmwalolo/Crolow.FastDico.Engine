@@ -4,6 +4,7 @@ using Crolow.FastDico.Common.Interfaces.ScrabbleApi.Services;
 using Crolow.FastDico.Common.Interfaces.Settings;
 using Crolow.FastDico.GadDag;
 using Crolow.TopMachine.Core.Entities.Lists;
+using Crolow.TopMachine.Data.Bridge.Entities.Definitions;
 using Crolow.TopMachine.Data.Bridge.Entities.Lists;
 using Crolow.TopMachine.Data.Bridge.Enums;
 using Kalow.Apps.Common.DataTypes;
@@ -20,16 +21,200 @@ namespace Crolow.TopMachine.Builders.Lists
         {
             this.facade = facade;
         }
-        public async Task BuildAsync(IListConfigurationModel config, Task<IDictionaryContainer> dicoContainer)
+        public async Task BuildAsync(IListConfigurationModel config, IDictionaryContainer dicoContainer, IDictionaryContainer dicoContainerRef)
+        {
+            if (config.IsExtensionList)
+            {
+                await BuildExtensionsListAsync(config, dicoContainer, dicoContainerRef);
+            }
+            else
+            {
+                await BuildNormalListAsync(config, dicoContainer);
+            }
+        }
+
+        private async Task BuildExtensionsListAsync(IListConfigurationModel config, IDictionaryContainer dicoContainer, IDictionaryContainer dicoContainerRef)
+        {
+            var dico = (await facade.Current.DictionaryService.LoadAllAsync()).First(p => p.Id == config.DictionaryId);
+            var tileConfig = (await facade.Current.LetterService.LoadAllAsync()).First(p => p.Name == dico.Language);
+            var searcher = dicoContainer.Searcher;//  new GadDagSearch(dicoContainer.Result.Dico.Root, dicoContainer.Result.TilesUtils);
+            var searcherRef = dicoContainerRef.Searcher;//  new GadDagSearch(dicoContainer.Result.Dico.Root, dicoContainer.Result.TilesUtils);
+
+            var allWords = await facade.Current.DictionaryService.GetAllWordsAsync(config.Language);
+
+            var baseList = allWords
+                .Where(word => word.Word.StartsWith("ajuste") && word.Word.Length >= config.MinWordLength && word.Word.Length <= config.MaxWordLength).OrderBy(p => p.WordType).ToList();
+
+            var lookupSrc = new HashSet<string>(searcher.SearchAllWords(0, 15));
+            var lookup = new HashSet<string>(searcherRef.SearchAllWords(0, 15));
+
+            var refinedList = new List<IWordToDicoModel>();
+            var results = new Dictionary<KalowId, List<(IWordToDicoModel, IWordToDicoModel)>>();
+
+            foreach (var word in baseList)
+            {
+                if (word.Word.Length < config.MinWordLength || word.Word.Length > config.MaxWordLength)
+                {
+                    continue;
+                }
+
+                if (!lookupSrc.Contains(word.Word.ToUpper()))
+                {
+                    continue;
+                }
+
+                if (!CheckIfAllLetterIsInWord(word.Word, config.MandatoryLetters)
+                    || !CheckIfAnyLetterIsInWord(word.Word, config.LettersInRack)
+                    || !CheckIfNoneLetterIsInWord(word.Word, config.ExcludedLetters)
+                    )
+                {
+                    continue;
+                }
+
+                if (!CheckCriteria(word.Word, config))
+                {
+                    continue;
+                }
+
+                var extensions = allWords.Where(p => p.Parent != word.Parent && p.Word.Contains(word.Word)).OrderBy(p => p.WordType);
+                var accepted = new List<IWordToDicoModel>();
+
+                foreach (var extension in extensions)
+                {
+                    if (lookup.Contains(extension.Word.ToUpper()))
+                    {
+                        var (before, after) = FindLimits(extension.Word, word.Word);
+                        if (
+                            before <= config.BeforeExtensionLetters
+                            && before >= config.MinBeforeExtensionLetters
+                            && after <= config.AfterExtensionLetters
+                            && after >= config.MinAfterExtensionLetters
+                            )
+                        {
+                            accepted.Add(extension);
+                        }
+                    }
+
+                }
+
+                if (accepted.Count > 0)
+                {
+                    List<(IWordToDicoModel, IWordToDicoModel)> acceptedList = new List<(IWordToDicoModel, IWordToDicoModel)>();
+
+                    if (!results.ContainsKey(word.Parent))
+                    {
+                        acceptedList = new List<(IWordToDicoModel, IWordToDicoModel)>();
+                        results.Add(word.Parent, acceptedList);
+                    }
+                    else
+                    {
+                        acceptedList = results[word.Parent];
+                    }
+
+                    foreach (var accept in accepted)
+                    {
+                        if (!acceptedList.Any(p => p.Item2.Parent == accept.Parent))
+                        {
+                            acceptedList.Add((word, accept));
+                        }
+                    }
+                }
+            }
+
+            List<IListItemModel> newItems = new List<IListItemModel>();
+
+            foreach (var result in results)
+            {
+                var groups = result.Value.GroupBy(p => p.Item1.Word);
+                foreach (var group in groups)
+                {
+                    ListItemModel item = new ListItemModel();
+                    item.ListId = config.Id;
+                    item.Id = KalowId.NewObjectId();
+                    item.Rack = group.First().Item1.Word.ToUpper();
+
+                    foreach (var solution in group)
+                    {
+                        ListSolutionModel solutionModel = new ListSolutionModel();
+                        solutionModel.Solution = solution.Item2.Word.ToUpper();
+                        solutionModel.Suffix = ExtractSuffix(solution.Item2.Word, solution.Item1.Word).ToUpper();
+                        solutionModel.Prefix = ExtractPrefix(solution.Item2.Word, solution.Item1.Word).ToUpper();
+                        solutionModel.SuffixLength = solutionModel.Suffix.Length;
+                        solutionModel.PrefixLength = solutionModel.Prefix.Length;
+                        item.Solutions.Add(solutionModel);
+                    }
+
+                    if (item.Solutions.Count < config.MinPossilibies || item.Solutions.Count > config.MaxPossilibies)
+                    {
+                        continue;
+                    }
+
+                    item.EditState = Data.Bridge.EditState.New;
+                    newItems.Add(item);
+                }
+            }
+
+            await facade.Current.ListConfigService.UpdateItemsAsync(newItems);
+
+            config.Stats = new ListStats
+            {
+                Count = newItems.Count(p => p.EditState != Data.Bridge.EditState.ToDelete),
+                Found = 0,
+                NotFound = 0,
+                Isolated = 0
+            };
+
+            config.EditState = Data.Bridge.EditState.Update;
+            await facade.Current.ListConfigService.UpdateListConfigAsync(config);
+        }
+
+        private string ExtractPrefix(string word1, string word2)
+        {
+            if (string.IsNullOrEmpty(word1) || string.IsNullOrEmpty(word2))
+                return string.Empty;
+
+            int index = word1.IndexOf(word2, StringComparison.OrdinalIgnoreCase);
+            if (index < 0)
+                return string.Empty;
+
+            return word1.Substring(0, index);
+        }
+
+        private string ExtractSuffix(string word1, string word2)
+        {
+            if (string.IsNullOrEmpty(word1) || string.IsNullOrEmpty(word2))
+                return string.Empty;
+
+            int index = word1.IndexOf(word2, StringComparison.OrdinalIgnoreCase);
+            if (index < 0)
+                return string.Empty;
+
+            return word1.Substring(index + word2.Length);
+        }
+
+        private (int before, int after) FindLimits(string word, string pattern)
+        {
+            int index = word.IndexOf(pattern, StringComparison.OrdinalIgnoreCase);
+
+            if (index < 0)
+                return (0, 0);
+
+            int before = index;
+            int after = word.Length - (index + pattern.Length);
+            return (before, after);
+        }
+
+
+        private async Task BuildNormalListAsync(IListConfigurationModel config, IDictionaryContainer dicoContainer)
         {
             var dico = (await facade.Current.DictionaryService.LoadAllAsync()).First(p => p.Id == config.DictionaryId);
             var tileConfig = (await facade.Current.LetterService.LoadAllAsync()).First(p => p.Name == dico.Language);
 
 
-            searcher = new GadDagSearch(dicoContainer.Result.Dico.Root, dicoContainer.Result.TilesUtils);
+            searcher = new GadDagSearch(dicoContainer.Dico.Root, dicoContainer.TilesUtils);
             var words = searcher.SearchAllWords(config.MinWordLength, config.MaxWordLength);
 
-            Dictionary<string, List<string>> listOfWords = new Dictionary<string, List<string>>();
+            Dictionary<string, List<IListSolutionModel>> listOfWords = new Dictionary<string, List<IListSolutionModel>>();
 
             foreach (var word in words)
             {
@@ -47,7 +232,7 @@ namespace Crolow.TopMachine.Builders.Lists
                     continue;
                 }
 
-                if (!CheckCritera(word, config))
+                if (!CheckCriteria(word, config))
                 {
                     continue;
                 }
@@ -56,10 +241,7 @@ namespace Crolow.TopMachine.Builders.Lists
                 var racks = new List<string>();
                 if (config.UseJokers)
                 {
-                    if (word.Contains("Z"))
-                    {
-                        Console.WriteLine(word);
-                    }
+
                     var l = GetSortedCombinations(word, config.LetterForJokers).Select(p => p + "?");
                     if (l.Count() > 0)
                     {
@@ -74,7 +256,7 @@ namespace Crolow.TopMachine.Builders.Lists
 
                 foreach (var rack in racks)
                 {
-                    var list = new List<string>();
+                    var list = new List<IListSolutionModel>();
 
                     if (listOfWords.ContainsKey(rack))
                     {
@@ -84,7 +266,11 @@ namespace Crolow.TopMachine.Builders.Lists
                     {
                         listOfWords.Add(rack, list);
                     }
-                    list.Add(word);
+
+                    list.Add(new ListSolutionModel
+                    {
+                        Solution = word
+                    });
                 }
             }
 
@@ -153,11 +339,11 @@ namespace Crolow.TopMachine.Builders.Lists
             };
 
             config.EditState = Data.Bridge.EditState.Update;
-            facade.Current.ListConfigService.UpdateListConfigAsync(config);
+            await facade.Current.ListConfigService.UpdateListConfigAsync(config);
 
         }
 
-        private bool CheckCritera(string word, IListConfigurationModel config)
+        private bool CheckCriteria(string word, IListConfigurationModel config)
         {
             if (config.Criteria.Count == 0) return true;
             bool matchAll = config.MatchAllCriteria && config.Criteria.Count > 1;

@@ -4,6 +4,15 @@ using Kalow.Apps.Common.DataTypes;
 
 namespace Crolow.TopMachine.Core.Entities.Lists
 {
+    public interface IListSolutionModel
+    {
+        int PrefixLength { get; set; }
+        int SuffixLength { get; set; }
+        string Prefix { get; set; }
+        string Suffix { get; set; }
+        string Solution { get; set; }
+    }
+
     public interface IListItemModel : IDataObject
     {
         KalowId ListId { get; set; }
@@ -11,7 +20,8 @@ namespace Crolow.TopMachine.Core.Entities.Lists
         int FoundInRowCount { get; set; }
         int NotFoundCount { get; set; }
         string Rack { get; set; }
-        List<string> Solutions { get; set; }
+        List<IListSolutionModel> Solutions { get; set; }
+
         StatusOfListItem Status { get; set; }
     }
 }

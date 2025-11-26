@@ -57,7 +57,7 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds
 
             if (Filters.ForceStartBoostRound != 0)
             {
-                //if (currentGame.GameObjects.Round < Filters.ForceStartBoostRound - 1)
+                if (currentGame.GameObjects.Round < Filters.ForceStartBoostRound - 1)
                 {
                     return base.InitializeLetters(rack);
                 }

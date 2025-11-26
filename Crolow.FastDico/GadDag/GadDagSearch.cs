@@ -50,15 +50,15 @@ public class GadDagSearch : IDawgSearch
     public bool SearchWord(string word)
     {
         var bytes = tilesUtils.ConvertWordToBytes(word.ToUpper());
-        return SearchWordRecursive(Root, bytes, 0, false);
+        return SearchWordRecursive(Root, bytes, 0);
     }
 
     public bool SearchWord(List<byte> word)
     {
-        return SearchWordRecursive(Root, word, 0, false);
+        return SearchWordRecursive(Root, word, 0);
     }
 
-    private bool SearchWordRecursive(ILetterNode currentNode, List<byte> word, int index, bool pastPivot)
+    private bool SearchWordRecursive(ILetterNode currentNode, List<byte> word, int index)
     {
         if (index == word.Count)
         {
@@ -70,9 +70,9 @@ public class GadDagSearch : IDawgSearch
         // Traverse children to find the matching letter
         foreach (var child in currentNode.Children)
         {
-            if (child.Letter == currentByte || !pastPivot && child.Letter == TilesUtils.PivotByte) // Pivot handling
+            if (child.Letter == currentByte) // Pivot handling
             {
-                if (SearchWordRecursive(child, word, index + 1, pastPivot || child.Letter == TilesUtils.PivotByte))
+                if (SearchWordRecursive(child, word, index + 1))
                 {
                     return true;
                 }

@@ -5,11 +5,19 @@ using Kalow.Apps.Common.DataTypes;
 
 namespace Crolow.TopMachine.Core.Entities.Lists
 {
+    public class ListSolutionModel : IListSolutionModel
+    {
+        public int PrefixLength { get; set; }
+        public int SuffixLength { get; set; }
+        public string Prefix { get; set; }
+        public string Suffix { get; set; }
+        public string Solution { get; set; }
+    }
     public class ListItemModel : DataObject, IListItemModel
     {
         public KalowId ListId { get; set; } = KalowId.Empty;
         public string Rack { get; set; } = string.Empty;
-        public List<string> Solutions { get; set; }
+        public List<IListSolutionModel> Solutions { get; set; } = new List<IListSolutionModel>();
         public StatusOfListItem Status { get; set; } = StatusOfListItem.NotPlayed;
         public int FoundCount { get; set; } = 0;
         public int NotFoundCount { get; set; } = 0;
@@ -58,5 +66,14 @@ namespace Crolow.TopMachine.Core.Entities.Lists
         #endregion
 
         public IListStats Stats { get; set; } = new ListStats();
+        public bool IsExtensionList { get; set; }
+        public int MaxExtensionLetters { get; set; }
+
+        public int MinBeforeExtensionLetters { get; set; }
+        public int BeforeExtensionLetters { get; set; }
+        public int MinAfterExtensionLetters { get; set; }
+        public int AfterExtensionLetters { get; set; }
+        public bool FilterExtensions { get; set; }
+        public KalowId ExtensionDictionaryId { get; set; } = KalowId.Empty;
     }
 }

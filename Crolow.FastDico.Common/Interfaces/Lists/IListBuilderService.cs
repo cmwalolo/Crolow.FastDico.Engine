@@ -5,6 +5,6 @@ namespace Crolow.FastDico.Common.Interfaces.Lists
 {
     public interface IListBuilderService
     {
-        Task BuildAsync(IListConfigurationModel config, Task<IDictionaryContainer> dicoContainer);
+        Task BuildAsync(IListConfigurationModel config, IDictionaryContainer dicoContainer, IDictionaryContainer dicoContainerRef);
     }
 }

@@ -44,6 +44,7 @@ namespace Crolow.TopMachine.Builders.Dictionaries
             //var l = wordList.Where(p => p.StartsWith("aa"));
 
             GadDagDictionary dictionary = new GadDagDictionary(dictionaryContainer.TilesUtils);
+
             dictionary.Build(wordList);
 
             var path = config.AppDataFolderPath + "\\" + outputFilename;

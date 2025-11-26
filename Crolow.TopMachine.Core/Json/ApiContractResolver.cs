@@ -34,6 +34,7 @@ namespace Crolow.TopMachine.Core.Json
                 { } when objectType == typeof(IDictionaryModel) => base.CreateContract(typeof(DictionaryModel)),
                 { } when objectType == typeof(IListConfigurationModel) => base.CreateContract(typeof(ListConfigurationModel)),
                 { } when objectType == typeof(IListItemModel) => base.CreateContract(typeof(ListItemModel)),
+                { } when objectType == typeof(IListSolutionModel) => base.CreateContract(typeof(ListSolutionModel)),
 
                 { } when objectType == typeof(IGameDetailModel) => base.CreateContract(typeof(GameDetailModel)),
                 { } when objectType == typeof(IGameUserDetailModel) => base.CreateContract(typeof(GameUserDetailModel)),

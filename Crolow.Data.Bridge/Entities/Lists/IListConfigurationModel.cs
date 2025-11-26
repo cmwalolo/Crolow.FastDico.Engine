@@ -10,6 +10,8 @@ namespace Crolow.TopMachine.Data.Bridge.Entities.Lists
         int NotFound { get; set; }
         int Isolated { get; set; }
     }
+
+
     public interface IListConfigurationModel : IDataObject
     {
         public KalowId DictionaryId { get; set; }
@@ -36,5 +38,14 @@ namespace Crolow.TopMachine.Data.Bridge.Entities.Lists
 
         TypeOfGame TypeOfGame { get; set; }
         bool UseJokers { get; set; }
+
+        bool IsExtensionList { get; set; }
+        int MaxExtensionLetters { get; set; }
+        int MinBeforeExtensionLetters { get; set; }
+        int BeforeExtensionLetters { get; set; }
+        int MinAfterExtensionLetters { get; set; }
+        int AfterExtensionLetters { get; set; }
+        bool FilterExtensions { get; set; }
+        public KalowId ExtensionDictionaryId { get; set; }
     }
 }
