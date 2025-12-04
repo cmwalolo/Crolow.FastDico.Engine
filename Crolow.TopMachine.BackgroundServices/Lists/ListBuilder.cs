@@ -43,12 +43,11 @@ namespace Crolow.TopMachine.Builders.Lists
             var allWords = await facade.Current.DictionaryService.GetAllWordsAsync(config.Language);
 
             var baseList = allWords
-                .Where(word => word.Word.StartsWith("ajuste") && word.Word.Length >= config.MinWordLength && word.Word.Length <= config.MaxWordLength).OrderBy(p => p.WordType).ToList();
+                .Where(word => word.Word.Length >= config.MinWordLength && word.Word.Length <= config.MaxWordLength).OrderBy(p => p.WordType).ToList();
 
             var lookupSrc = new HashSet<string>(searcher.SearchAllWords(0, 15));
             var lookup = new HashSet<string>(searcherRef.SearchAllWords(0, 15));
 
-            var refinedList = new List<IWordToDicoModel>();
             var results = new Dictionary<KalowId, List<(IWordToDicoModel, IWordToDicoModel)>>();
 
             foreach (var word in baseList)
@@ -81,20 +80,24 @@ namespace Crolow.TopMachine.Builders.Lists
 
                 foreach (var extension in extensions)
                 {
-                    if (lookup.Contains(extension.Word.ToUpper()))
+                    if (!extension.Word.Equals(word.Word, StringComparison.InvariantCultureIgnoreCase))
+
                     {
-                        var (before, after) = FindLimits(extension.Word, word.Word);
-                        if (
-                            before <= config.BeforeExtensionLetters
-                            && before >= config.MinBeforeExtensionLetters
-                            && after <= config.AfterExtensionLetters
-                            && after >= config.MinAfterExtensionLetters
-                            )
+                        if (lookup.Contains(extension.Word.ToUpper()))
                         {
-                            accepted.Add(extension);
+                            var (before, after) = FindLimits(extension.Word, word.Word);
+                            if (
+                                (before != 0 || after != 0)
+                                && before <= config.BeforeExtensionLetters
+                                && before >= config.MinBeforeExtensionLetters
+                                && after <= config.AfterExtensionLetters
+                                && after >= config.MinAfterExtensionLetters
+                                )
+                            {
+                                accepted.Add(extension);
+                            }
                         }
                     }
-
                 }
 
                 if (accepted.Count > 0)
@@ -121,7 +124,7 @@ namespace Crolow.TopMachine.Builders.Lists
                 }
             }
 
-            List<IListItemModel> newItems = new List<IListItemModel>();
+            Dictionary<string, IListItemModel> newItems = new Dictionary<string, IListItemModel>();
 
             foreach (var result in results)
             {
@@ -150,15 +153,29 @@ namespace Crolow.TopMachine.Builders.Lists
                     }
 
                     item.EditState = Data.Bridge.EditState.New;
-                    newItems.Add(item);
+
+                    if (newItems.ContainsKey(item.Rack))
+                    {
+                        var oldItem = newItems[item.Rack];
+                        oldItem.Solutions.AddRange(item.Solutions);
+                    }
+                    else
+                    {
+                        newItems.Add(item.Rack, item);
+                    }
                 }
             }
 
-            await facade.Current.ListConfigService.UpdateItemsAsync(newItems);
+            foreach (var i in newItems.Values)
+            {
+                i.Solutions = i.Solutions.GroupBy(p => p.Solution).Select(p => p.First()).OrderBy(p => p.Solution).ToList();
+
+            }
+            await facade.Current.ListConfigService.UpdateItemsAsync(newItems.Values.ToList());
 
             config.Stats = new ListStats
             {
-                Count = newItems.Count(p => p.EditState != Data.Bridge.EditState.ToDelete),
+                Count = newItems.Values.Count(p => p.EditState != Data.Bridge.EditState.ToDelete),
                 Found = 0,
                 NotFound = 0,
                 Isolated = 0
