@@ -58,7 +58,7 @@ public class ScrabbleAI : IScrabbleAI
 
                     var filters = CurrentGame.ControllersSetup.Validator.InitializeFilters();
                     playedRounds = CurrentGame.ControllersSetup.Validator.GetRound(letters, filters);
-
+                    CurrentGame.GameObjects.CurrentPlayedRounds = playedRounds;
 
                     if (playedRounds.Tops.Any())
                     {
@@ -207,23 +207,47 @@ public class ScrabbleAI : IScrabbleAI
         GameEnded?.Invoke();
     }
 
-    public async Task<bool> ValidateRound(PlayableSolution solution)
+    public async Task<int> ValidateRound(PlayableSolution solution, bool forceTop)
     {
         var isValid = CurrentGame.ControllersSetup.BoardSolver.ValidateRound(solution);
         if (!isValid)
         {
             solution.Points = 0;
         }
-        return isValid;
+
+        if (forceTop)
+        {
+            var src = solution.GetWord(CurrentGame.ControllersSetup.DictionaryContainer.TilesUtils);
+
+            var tgt = CurrentGame.GameObjects.CurrentPlayedRounds.Tops.FirstOrDefault(p => p.GetWord(CurrentGame.ControllersSetup.DictionaryContainer.TilesUtils).Equals(src));
+            if (tgt != null)
+            {
+                solution.Points = tgt.Points;
+            }
+        }
+
+        return solution.Points;
     }
 
-    public async Task<bool> FinalizeRound(PlayableSolution solution)
+    public async Task<bool> FinalizeRound(PlayableSolution solution, bool forceTop)
     {
         var isValid = CurrentGame.ControllersSetup.BoardSolver.ValidateRound(solution);
         if (!isValid)
         {
             solution.Points = 0;
         }
+
+        if (forceTop)
+        {
+            var src = solution.GetWord(CurrentGame.ControllersSetup.DictionaryContainer.TilesUtils);
+
+            var tgt = CurrentGame.GameObjects.CurrentPlayedRounds.Tops.FirstOrDefault(p => p.GetWord(CurrentGame.ControllersSetup.DictionaryContainer.TilesUtils).Equals(src));
+            if (tgt != null)
+            {
+                solution = tgt;
+            }
+        }
+
         SetRound(solution);
         return isValid;
     }

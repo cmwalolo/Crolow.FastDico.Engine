@@ -42,6 +42,7 @@ public class GameObjects
     public IGameConfigModel GameConfig { get; set; }
     public PlayableSolution SelectedRound { get; set; }
     public ILetterConfigModel LetterConfig { get; set; }
+    public PlayedRounds CurrentPlayedRounds { get; set; }
 }
 
 public class GameControllersSetup

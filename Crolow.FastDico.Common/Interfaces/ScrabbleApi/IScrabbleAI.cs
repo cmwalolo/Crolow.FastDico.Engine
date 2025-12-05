@@ -17,8 +17,8 @@ namespace Crolow.FastDico.Common.Interfaces.ScrabbleApi
         Task<bool> NextRound();
         Task StartGame();
         void SetRound(PlayableSolution userSolution = null);
-        Task<bool> ValidateRound(PlayableSolution solution);
-        Task<bool> FinalizeRound(PlayableSolution solution);
+        Task<int> ValidateRound(PlayableSolution solution, bool forceTop);
+        Task<bool> FinalizeRound(PlayableSolution solution, bool forceTop);
 
 
     }
