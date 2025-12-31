@@ -5,6 +5,6 @@ namespace Crolow.FastDico.Common.Interfaces.ScrabbleApi
 {
     public interface IDictionaryContainerFactory
     {
-        Task<IDictionaryContainer> GetContainer(KalowId dictionaryId);
+        Task<IDictionaryContainer> GetContainer(KalowId dictionaryId, string language);
     }
 }

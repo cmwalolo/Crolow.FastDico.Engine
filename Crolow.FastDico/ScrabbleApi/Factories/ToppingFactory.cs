@@ -55,10 +55,10 @@ namespace Crolow.FastDico.ScrabbleApi.Factories
                 GameObjects = new GameObjects()
             };
 
-            CurrentGame.ControllersSetup.DictionaryContainer = await dictionaryContainerFactory.GetContainer(container.GameConfig.Dictionary);
+            CurrentGame.ControllersSetup.DictionaryContainer = await dictionaryContainerFactory.GetContainer(container.GameConfig.Dictionary, null);
             if (container.GameConfig.ReferenceDictionary != null && !container.GameConfig.ReferenceDictionary.Equals(KalowId.Empty))
             {
-                CurrentGame.ControllersSetup.ReferenceDictionaryContainer = await dictionaryContainerFactory.GetContainer(container.GameConfig.ReferenceDictionary);
+                CurrentGame.ControllersSetup.ReferenceDictionaryContainer = await dictionaryContainerFactory.GetContainer(container.GameConfig.ReferenceDictionary, null);
             }
 
             var playConfiguration = new ConfigLoader().ReadConfiguration(container, CurrentGame.ControllersSetup.DictionaryContainer);
@@ -116,9 +116,9 @@ namespace Crolow.FastDico.ScrabbleApi.Factories
             };
             CurrentGame.History.Game = model;
             CurrentGame.History.Users = detail;
-            CurrentGame.ControllersSetup.DictionaryContainer = await dictionaryContainerFactory.GetContainer(configContainer.GameConfig.Dictionary);
+            CurrentGame.ControllersSetup.DictionaryContainer = await dictionaryContainerFactory.GetContainer(configContainer.GameConfig.Dictionary, null);
             var playConfiguration = new ConfigLoader().ReadConfiguration(configContainer, CurrentGame.ControllersSetup.DictionaryContainer);
-            CurrentGame.ControllersSetup.DictionaryContainer = await dictionaryContainerFactory.GetContainer(configContainer.GameConfig.Dictionary);
+            CurrentGame.ControllersSetup.DictionaryContainer = await dictionaryContainerFactory.GetContainer(configContainer.GameConfig.Dictionary, null);
 
             CurrentGame.GameObjects.MaxRounds = configContainer.MaxRounds;
             CurrentGame.GameObjects.Rounds = new GameDetail(null);

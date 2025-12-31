@@ -31,7 +31,7 @@ namespace Crolow.FastDico.ScrabbleApi.Factories
 
 
 
-        public async Task<IDictionaryContainer> GetContainer(KalowId dictionaryId)
+        public async Task<IDictionaryContainer> GetContainer(KalowId dictionaryId, string language)
         {
 
             if (cache.ContainsKey(dictionaryId))
@@ -41,7 +41,7 @@ namespace Crolow.FastDico.ScrabbleApi.Factories
             else
             {
                 var container = new DictionaryContainer();
-                var model = (await serviceFacade.Current.DictionaryService.LoadAllAsync()).FirstOrDefault(p => p.Id == dictionaryId || (p.IsDefault && dictionaryId.Equals(KalowId.Empty)));
+                var model = (await serviceFacade.Current.DictionaryService.LoadAllAsync()).FirstOrDefault(p => p.Id == dictionaryId || (p.Language == language && p.IsDefault && dictionaryId.Equals(KalowId.Empty)));
                 dictionaryId = model?.Id ?? KalowId.Empty;
 
                 if (cache.ContainsKey(dictionaryId))

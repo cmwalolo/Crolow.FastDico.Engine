@@ -62,6 +62,10 @@ namespace Crolow.TopMachine.Builders.Lists
                     continue;
                 }
 
+                if (word.Word == "chie")
+                {
+                    Console.Write("ok");
+                }
                 if (!CheckIfAllLetterIsInWord(word.Word, config.MandatoryLetters)
                     || !CheckIfAnyLetterIsInWord(word.Word, config.LettersInRack)
                     || !CheckIfNoneLetterIsInWord(word.Word, config.ExcludedLetters)
@@ -92,8 +96,10 @@ namespace Crolow.TopMachine.Builders.Lists
                                 && before >= config.MinBeforeExtensionLetters
                                 && after <= config.AfterExtensionLetters
                                 && after >= config.MinAfterExtensionLetters
+                                && before + after <= config.MaxExtensionLetters
                                 )
                             {
+
                                 accepted.Add(extension);
                             }
                         }
