@@ -13,10 +13,19 @@ namespace Crolow.TopMachine.Core.Entities.Lists
         public string Suffix { get; set; }
         public string Solution { get; set; }
     }
+
+    public class ListWordModel : IListWordModel
+    {
+        public string Rack { get; set; } = string.Empty;
+        public List<IListSolutionModel> Solutions { get; set; } = new List<IListSolutionModel>();
+    }
+
     public class ListItemModel : DataObject, IListItemModel
     {
         public KalowId ListId { get; set; } = KalowId.Empty;
+
         public string Rack { get; set; } = string.Empty;
+        public List<IListWordModel> Words { get; set; } = new List<IListWordModel>();
         public List<IListSolutionModel> Solutions { get; set; } = new List<IListSolutionModel>();
         public StatusOfListItem Status { get; set; } = StatusOfListItem.NotPlayed;
         public int FoundCount { get; set; } = 0;

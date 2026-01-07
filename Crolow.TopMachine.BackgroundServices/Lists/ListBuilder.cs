@@ -43,7 +43,9 @@ namespace Crolow.TopMachine.Builders.Lists
             var allWords = await facade.Current.DictionaryService.GetAllWordsAsync(config.Language);
 
             var baseList = allWords
-                .Where(word => word.Word.Length >= config.MinWordLength && word.Word.Length <= config.MaxWordLength).OrderBy(p => p.WordType).ToList();
+                .Where(word => word.Word.Length >= config.MinWordLength && word.Word.Length <= config.MaxWordLength)
+                // .Where(word => word.Word.StartsWith("entr"))
+                .OrderBy(p => p.WordType).ToList();
 
             var lookupSrc = new HashSet<string>(searcher.SearchAllWords(0, 15));
             var lookup = new HashSet<string>(searcherRef.SearchAllWords(0, 15));
@@ -134,13 +136,18 @@ namespace Crolow.TopMachine.Builders.Lists
 
             foreach (var result in results)
             {
+                var word = allWords.FirstOrDefault(p => p.WordType == WordType.Entry && p.Parent == result.Key);
                 var groups = result.Value.GroupBy(p => p.Item1.Word);
+                ListItemModel item = new ListItemModel();
+                item.ListId = config.Id;
+                item.Id = KalowId.NewObjectId();
+                item.Rack = word?.Word.ToUpper() ?? groups.First().First().Item1.Word;
+
                 foreach (var group in groups)
                 {
-                    ListItemModel item = new ListItemModel();
-                    item.ListId = config.Id;
-                    item.Id = KalowId.NewObjectId();
-                    item.Rack = group.First().Item1.Word.ToUpper();
+                    ListWordModel wm = new ListWordModel();
+                    wm.Rack = group.First().Item1.Word.ToUpper();
+                    item.Words.Add(wm);
 
                     foreach (var solution in group)
                     {
@@ -150,10 +157,11 @@ namespace Crolow.TopMachine.Builders.Lists
                         solutionModel.Prefix = ExtractPrefix(solution.Item2.Word, solution.Item1.Word).ToUpper();
                         solutionModel.SuffixLength = solutionModel.Suffix.Length;
                         solutionModel.PrefixLength = solutionModel.Prefix.Length;
-                        item.Solutions.Add(solutionModel);
+                        wm.Solutions.Add(solutionModel);
                     }
 
-                    if (item.Solutions.Count < config.MinPossilibies || item.Solutions.Count > config.MaxPossilibies)
+                    var c = item.Words.Sum(item => item.Solutions.Count);
+                    if (c < config.MinPossilibies || c > config.MaxPossilibies)
                     {
                         continue;
                     }
@@ -163,7 +171,30 @@ namespace Crolow.TopMachine.Builders.Lists
                     if (newItems.ContainsKey(item.Rack))
                     {
                         var oldItem = newItems[item.Rack];
-                        oldItem.Solutions.AddRange(item.Solutions);
+                        foreach (var w in item.Words)
+                        {
+                            var existingWord = oldItem.Words.FirstOrDefault(p => p.Rack == w.Rack);
+                            if (existingWord != null)
+                            {
+                                existingWord.Solutions.AddRange(w.Solutions);
+                                existingWord.Solutions = existingWord.Solutions
+                                    .GroupBy(p => p.Solution)
+                                    .Select(p => p.First())
+                                    .OrderBy(p => p.Solution)
+                                    .ToList();
+                            }
+                            else
+                            {
+                                w.Solutions = w.Solutions
+                                    .GroupBy(p => p.Solution)
+                                    .Select(p => p.First())
+                                    .OrderBy(p => p.Solution)
+                                    .ToList();
+
+                                oldItem.Words.Add(w);
+                            }
+                        }
+                        //oldItem.Solutions.AddRange(item.Solutions);
                     }
                     else
                     {
@@ -174,8 +205,10 @@ namespace Crolow.TopMachine.Builders.Lists
 
             foreach (var i in newItems.Values)
             {
-                i.Solutions = i.Solutions.GroupBy(p => p.Solution).Select(p => p.First()).OrderBy(p => p.Solution).ToList();
-
+                foreach (var j in i.Words)
+                {
+                    j.Solutions = j.Solutions.GroupBy(p => p.Solution).Select(p => p.First()).OrderBy(p => p.Solution).ToList();
+                }
             }
             await facade.Current.ListConfigService.UpdateItemsAsync(newItems.Values.ToList());
 
