@@ -23,6 +23,9 @@ Any commercial usage is prohibited without any mutual agreement
 To experiment a full functional application you can try out Skrabby with a small contribution of 5€ by month :
 https://www.facebook.com/profile.php?id=61582287357805
 
+A complete implementation in WinUI and Blazor is available : 
+https://github.com/cmwalolo/Crolow.FastDico
+
 For any information and credits : crolow.fastdico at outlook.com
 And if you want to support me, donations are welcome. 
 
