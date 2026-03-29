@@ -62,24 +62,24 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds.Evaluators
                 this.config = new EvaluatorConfig();
                 if (currentGame.GameObjects.GameConfig.JokerMode)
                 {
-                    this.config.ScrabbleFrequence = 85;
-                    this.config.CollagesFrequence = 60;
+                    this.config.ScrabbleFrequence = 65;
+                    this.config.CollagesFrequence = 65;
                     this.config.AppuisFrequence = 90;
-                    this.config.RaccordsFrequence = 70;
+                    this.config.RaccordsFrequence = 60;
                     this.config.RackFrequence = 40;
-                    this.config.BoostFrequence = 80;
+                    this.config.BoostFrequence = 90;
                     this.config.SkipFrequence = 15;
                     this.config.StartBoostRound = 2;
-                    this.config.StartBoostFrequence = 50;
+                    this.config.StartBoostFrequence = 30;
                 }
                 else
                 {
-                    this.config.ScrabbleFrequence = 70;
-                    this.config.CollagesFrequence = 60;
+                    this.config.ScrabbleFrequence = 65;
+                    this.config.CollagesFrequence = 65;
                     this.config.AppuisFrequence = 100;
-                    this.config.RaccordsFrequence = 70;
-                    this.config.RackFrequence = 80;
-                    this.config.BoostFrequence = 80;
+                    this.config.RaccordsFrequence = 60;
+                    this.config.RackFrequence = 40;
+                    this.config.BoostFrequence = 90;
                     this.config.StartBoostRound = 2;
                     this.config.SkipFrequence = 10;
                     this.config.StartBoostFrequence = 30;
@@ -122,7 +122,8 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds.Evaluators
                 DoCollages = true;
 
             c = Random.Shared.Next(100);
-            if (c < config.ScrabbleFrequence)
+
+            if (DoBoost && c < config.ScrabbleFrequence)
                 DoScrabble = true;
 
             c = Random.Shared.Next(100);

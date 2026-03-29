@@ -70,7 +70,7 @@ namespace Crolow.FastDico.Builders.TopMachine
                 UserName = userRound.User.UserName,
             };
 
-            var kpi = gameModel.Rounds.Select(p => new KpiRate(p.KpiRate)).Take(gameModel.Rounds.Count);
+            var kpi = gameModel.Rounds.Select(p => new KpiRate(p.KpiRate)).Take(game.GameObjects.UserRounds.Rounds.Count);
             var suc = new List<bool>();
 
             int totalPoints = 0;
@@ -85,10 +85,14 @@ namespace Crolow.FastDico.Builders.TopMachine
                     var round = game.GameObjects.UserRounds.Rounds[x];
                     suc.Add(ground.Points == round.Points);
 
-                    if (round.Points < ground.Points)
+                    if (ground.Points > 0)
                     {
-                        missedRounds++;
+                        if (round.Points < ground.Points)
+                        {
+                            missedRounds++;
+                        }
                     }
+
                     totalPoints += round.Points;
                     totalTime += round.PlayedTime;
 
