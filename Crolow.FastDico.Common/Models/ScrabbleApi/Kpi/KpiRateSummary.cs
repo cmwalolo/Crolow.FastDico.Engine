@@ -10,7 +10,7 @@ namespace Crolow.FastDico.Common.Models.ScrabbleApi.Kpi
         public KpiRateSummary()
         {
         }
-        public void Calculate(List<KpiRate> rates, List<bool> found)
+        public void Calculate(List<KpiRate> rates, List<int> found)
         {
             Summary.Clear();
 
@@ -18,19 +18,20 @@ namespace Crolow.FastDico.Common.Models.ScrabbleApi.Kpi
             {
                 var rate = rates[i];
                 if (i < found.Count)
-                {
-                    bool isSuccess = found[i];
-
-                    for (int key = 0; key < 128; key++)
+                    if (found[i] != -1)
                     {
-                        if (!rate.Get(key)) continue;
+                        bool isSuccess = found[i] == 1;
 
-                        if (Summary.TryGetValue((KpiKeys)key, out var data))
-                            Summary[(KpiKeys)key] = ((KpiRateSummaryItem)data).Increment(isSuccess);
-                        else
-                            Summary[(KpiKeys)key] = new KpiRateSummaryItem(1, isSuccess ? 1 : 0);
+                        for (int key = 0; key < 128; key++)
+                        {
+                            if (!rate.Get(key)) continue;
+
+                            if (Summary.TryGetValue((KpiKeys)key, out var data))
+                                Summary[(KpiKeys)key] = ((KpiRateSummaryItem)data).Increment(isSuccess);
+                            else
+                                Summary[(KpiKeys)key] = new KpiRateSummaryItem(1, isSuccess ? 1 : 0);
+                        }
                     }
-                }
             }
         }
 

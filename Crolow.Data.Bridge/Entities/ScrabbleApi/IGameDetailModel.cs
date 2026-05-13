@@ -21,6 +21,8 @@ namespace Crolow.FastDico.Data.Bridge.Entities.ScrabbleApi
         public float RateRound { get; set; }
         public float RateAll { get; set; }
         public IKpiRateSummary KpiRateSummary { get; set; }
+        public bool IsValid { get; set; }
+
     }
 
     public interface IGameDetailModel : IDataObject
@@ -33,7 +35,6 @@ namespace Crolow.FastDico.Data.Bridge.Entities.ScrabbleApi
         int TotalPoints { get; set; }
         float PlayTime { get; set; }
         DateTime DateTime { get; set; }
-
 
     }
 

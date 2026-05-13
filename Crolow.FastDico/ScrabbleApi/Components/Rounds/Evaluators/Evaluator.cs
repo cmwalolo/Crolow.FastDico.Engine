@@ -57,13 +57,13 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds.Evaluators
             this.currentGame = currentGame;
             this.config = currentGame.GameObjects.GameConfig.BoostConfig;
 
-            if (this.config == null)
+            if (true || this.config == null)
             {
                 this.config = new EvaluatorConfig();
                 if (currentGame.GameObjects.GameConfig.JokerMode)
                 {
-                    this.config.ScrabbleFrequence = 65;
-                    this.config.CollagesFrequence = 65;
+                    this.config.ScrabbleFrequence = 75;
+                    this.config.CollagesFrequence = 50;
                     this.config.AppuisFrequence = 90;
                     this.config.RaccordsFrequence = 60;
                     this.config.RackFrequence = 40;
@@ -75,7 +75,7 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds.Evaluators
                 else
                 {
                     this.config.ScrabbleFrequence = 65;
-                    this.config.CollagesFrequence = 65;
+                    this.config.CollagesFrequence = 50;
                     this.config.AppuisFrequence = 100;
                     this.config.RaccordsFrequence = 60;
                     this.config.RackFrequence = 40;
@@ -121,20 +121,20 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds.Evaluators
             if (c < config.CollagesFrequence)
                 DoCollages = true;
 
-            c = Random.Shared.Next(100);
+            //            c = Random.Shared.Next(100);
 
             if (DoBoost && c < config.ScrabbleFrequence)
                 DoScrabble = true;
 
-            c = Random.Shared.Next(100);
+            //            c = Random.Shared.Next(100);
             if (c < config.AppuisFrequence)
                 DoAppuis = true;
 
-            c = Random.Shared.Next(100);
+            //            c = Random.Shared.Next(100);
             if (c < config.RaccordsFrequence)
                 DoRaccords = true;
 
-            c = Random.Shared.Next(100);
+            //            c = Random.Shared.Next(100);
             if (c < config.RackFrequence)
                 DoRack = true;
         }
@@ -161,13 +161,13 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds.Evaluators
 
                 EvaluateScrabble(rate, selectedRound, word, DoScrabble);
 
-                if (!DoBoost)
-                {
-                    if (DoScrabble)
-                        EvaluateScrabbleSousTop(rate, selectedRound, word, round.SubTops.FirstOrDefault());
-                    else
-                        EvaluateSousTop(rate, selectedRound, word, round.SubTops.FirstOrDefault());
-                }
+                //if (!DoBoost)
+                //{
+                //    if (DoScrabble)
+                //        EvaluateScrabbleSousTop(rate, selectedRound, word, round.SubTops.FirstOrDefault());
+                //    else
+                //        EvaluateSousTop(rate, selectedRound, word, round.SubTops.FirstOrDefault());
+                //}
 
                 EvaluateScoreMot(rate, selectedRound, word);
 

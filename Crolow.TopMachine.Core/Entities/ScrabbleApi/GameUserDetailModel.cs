@@ -21,6 +21,7 @@ public class GameUserDetailModel : DataObject, IGameUserDetailModel
     public float RateRound { get; set; }
     public float RateAll { get; set; }
     public int MissedRounds { get; set; }
+    public bool IsValid { get; set; } = true;
 
     public IKpiRateSummary KpiRateSummary { get; set; } = new KpiRateSummary();
 

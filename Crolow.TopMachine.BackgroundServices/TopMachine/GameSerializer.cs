@@ -71,7 +71,7 @@ namespace Crolow.FastDico.Builders.TopMachine
             };
 
             var kpi = gameModel.Rounds.Select(p => new KpiRate(p.KpiRate)).Take(game.GameObjects.UserRounds.Rounds.Count);
-            var suc = new List<bool>();
+            var suc = new List<int>();
 
             int totalPoints = 0;
             float totalTime = 0;
@@ -83,18 +83,24 @@ namespace Crolow.FastDico.Builders.TopMachine
                 if (x < game.GameObjects.UserRounds.Rounds.Count)
                 {
                     var round = game.GameObjects.UserRounds.Rounds[x];
-                    suc.Add(ground.Points == round.Points);
 
-                    if (ground.Points > 0)
+                    if (ground.Points > 0 && round.Points > 0)
                     {
+                        suc.Add(ground.Points == round.Points ? 1 : 0);
+
                         if (round.Points < ground.Points)
                         {
                             missedRounds++;
                         }
                     }
+                    else
+                    {
+                        suc.Add(-1);
+                    }
 
                     totalPoints += round.Points;
                     totalTime += round.PlayedTime;
+
 
                     PlayableSolutionModel roundModel = new PlayableSolutionModel
                     {
@@ -112,6 +118,13 @@ namespace Crolow.FastDico.Builders.TopMachine
                 {
                     missedRounds++;
                 }
+            }
+
+            if (gameModel.Rounds.Count != game.GameObjects.UserRounds.Rounds.Count)
+            {
+                game.GameObjects.UserRounds.IsValid = false;
+                model.IsValid = false;
+
             }
 
             KpiRateSummary kpiSummary = new KpiRateSummary();

@@ -9,6 +9,8 @@ public class GameDetail
     public int TotalPoints { get; set; }
     public float PlayTime { get; set; }
 
+    public bool IsValid { get; set; } = true;
+
     public GameDetail(IUserClient user)
     {
         this.User = user;
