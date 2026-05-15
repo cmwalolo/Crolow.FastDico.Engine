@@ -13,7 +13,7 @@ namespace Crolow.FastDico.Common.Models.Dictionary
         public IBaseDictionary Dico { get; set; }
         public ITileConfiguration TileConfiguration { get; set; }
         public ITilesUtils TilesUtils { get; set; }
-        public IDawgSearch Searcher { get; set; }
+        public IDicoSearch Searcher { get; set; }
 
     }
 }

@@ -63,7 +63,7 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds.Evaluators
                 if (currentGame.GameObjects.GameConfig.JokerMode)
                 {
                     this.config.ScrabbleFrequence = 75;
-                    this.config.CollagesFrequence = 50;
+                    this.config.CollagesFrequence = 60;
                     this.config.AppuisFrequence = 90;
                     this.config.RaccordsFrequence = 60;
                     this.config.RackFrequence = 40;
@@ -74,8 +74,8 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds.Evaluators
                 }
                 else
                 {
-                    this.config.ScrabbleFrequence = 65;
-                    this.config.CollagesFrequence = 50;
+                    this.config.ScrabbleFrequence = 75;
+                    this.config.CollagesFrequence = 60;
                     this.config.AppuisFrequence = 100;
                     this.config.RaccordsFrequence = 60;
                     this.config.RackFrequence = 40;

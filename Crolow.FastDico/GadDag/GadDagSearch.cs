@@ -3,7 +3,7 @@ using Crolow.FastDico.Utils;
 
 namespace Crolow.FastDico.GadDag;
 
-public class GadDagSearch : IDawgSearch
+public class GadDagSearch : IDicoSearch
 {
     public ILetterNode Root { get; private set; }
     public ITilesUtils tilesUtils { get; private set; }

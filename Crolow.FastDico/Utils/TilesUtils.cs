@@ -9,8 +9,7 @@ public class TilesUtils : ITilesUtils
 
     public const byte IsEnd = 1;
     public const byte PivotByte = 255;          // "#"
-    public const byte WildcardByte = 254;       // "*"
-    public const byte SingleMatchByte = 253;    // "? => for search purpose"
+    public const byte WildcardByte = 253;       // "*"
     public const byte JokerByte = 252;          // "?" 
 
     public TilesUtils(ITileConfiguration config)

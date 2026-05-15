@@ -17,7 +17,7 @@ namespace Crolow.FastDico.ScrabbleApi.Components.BoardSolvers
     {
         private Dictionary<string, uint> PivotCache = new Dictionary<string, uint>();
         private Board board;
-        private IDawgSearch searcher;
+        private IDicoSearch searcher;
         private ILetterNode letterNode;
         private PlayConfiguration playConfiguration;
         private CurrentGame currentGame;
