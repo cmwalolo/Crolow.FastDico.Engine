@@ -7,7 +7,7 @@ namespace Crolow.FastDico.Common.Models.ScrabbleApi.Entities
     public class LetterConfigModel : DataObject, ILetterConfigModel
     {
         public string Name { get; set; }
-        public List<ITileConfig> Letters { get; set; }
+        public List<ITileConfiguration> Letters { get; set; }
 
         public KalowId DictionaryId { get; set; }
 

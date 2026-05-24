@@ -191,7 +191,7 @@ public class DawgSearch : IDicoSearch
             else if (c == '?')
                 bytePattern.Add(TilesUtils.JokerByte); // '?' wildcard
             else
-                bytePattern.Add(tilesUtils.configuration.LettersByChar[c].Letter);
+                bytePattern.Add(tilesUtils.Configuration.LettersByChar[c].Letter);
         }
         return bytePattern;
     }

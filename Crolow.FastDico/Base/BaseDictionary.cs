@@ -28,13 +28,6 @@ public class BaseDictionary : IBaseDictionary
     /// <remarks>Null if no build has been performed. Value is set privately by the builder.</remarks>
     public ILetterNode RootBuild { get; private set; }
 
-
-    /// <summary>
-    /// Gets or sets the identifier of the build node.  
-    /// </summary>
-    /// <remarks>Unique identifier assigned to a build node within the build system.</remarks>
-    public int BuildNodeId { get; set; }
-
     private Dictionary<string, ILetterNode> nodeCache;
     protected ITilesUtils tilesUtils;
 
@@ -64,7 +57,6 @@ public class BaseDictionary : IBaseDictionary
     public void Build(IEnumerable<string> words)
     {
         nodeCache = new Dictionary<string, ILetterNode>();
-        BuildNodeId = 0;
         RootBuild = new LetterNode();
 
         foreach (var word in words)

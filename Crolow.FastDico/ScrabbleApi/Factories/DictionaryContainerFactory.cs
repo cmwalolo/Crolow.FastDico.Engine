@@ -65,9 +65,9 @@ namespace Crolow.FastDico.ScrabbleApi.Factories
             }
         }
 
-        private TileConfiguration ReadLetterConfig(ILetterConfigModel letterData)
+        private TilesConfiguration ReadLetterConfig(ILetterConfigModel letterData)
         {
-            var config = new TileConfiguration();
+            var config = new TilesConfiguration();
 
             config.Name = letterData.Name;
             foreach (var letter in letterData.Letters)

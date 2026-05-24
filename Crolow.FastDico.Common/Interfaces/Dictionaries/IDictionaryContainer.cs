@@ -11,7 +11,7 @@ namespace Crolow.FastDico.Common.Interfaces.Dictionaries
         ILetterConfigModel LetterConfig { get; set; }
         IDicoSearch Searcher { get; set; }
         ITilesUtils TilesUtils { get; set; }
-        ITileConfiguration TileConfiguration { get; set; }
+        ITilesConfiguration TileConfiguration { get; set; }
     }
 
 }

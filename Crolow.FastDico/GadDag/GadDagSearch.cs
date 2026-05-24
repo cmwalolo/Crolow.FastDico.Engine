@@ -246,7 +246,7 @@ public class GadDagSearch : IDicoSearch
             else if (c == '?')
                 bytePattern.Add(TilesUtils.JokerByte); // '?' wildcard
             else
-                bytePattern.Add(tilesUtils.configuration.LettersByChar[c].Letter);
+                bytePattern.Add(tilesUtils.Configuration.LettersByChar[c].Letter);
         }
         return bytePattern;
     }

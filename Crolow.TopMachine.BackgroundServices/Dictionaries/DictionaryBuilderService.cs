@@ -20,7 +20,6 @@ namespace Crolow.TopMachine.Builders.Dictionaries
         {
             List<IWordToDicoModel> thisWords = new List<IWordToDicoModel>();
 
-
             if (doEntries)
             {
                 thisWords.AddRange(words.Where(w => w.WordType == WordType.Entry));
@@ -41,8 +40,6 @@ namespace Crolow.TopMachine.Builders.Dictionaries
             var entryIds = new HashSet<KalowId>(entries.Where(e => e != null).Select(e => e.Id));
             var wordList = thisWords.Where(w => entryIds.Contains(w.Parent)).Select(w => w.Word).Distinct().ToList();
 
-            //var l = wordList.Where(p => p.StartsWith("aa"));
-
             GadDagDictionary dictionary = new GadDagDictionary(dictionaryContainer.TilesUtils);
 
             dictionary.Build(wordList);
@@ -55,7 +52,6 @@ namespace Crolow.TopMachine.Builders.Dictionaries
         {
 
             var batches = entries
-                .Where(p => p.NormalizedWord.Equals("ouir"))
                 .Select((item, index) => new { item, index })
                 .GroupBy(x => x.index / 100)
                 .Select(g => g.Select(x => x.item).ToList())
@@ -71,11 +67,8 @@ namespace Crolow.TopMachine.Builders.Dictionaries
                 {
                     bool isVerb = entry.Definitions.Any(d => d.CatGram.StartsWith("verbe", StringComparison.InvariantCultureIgnoreCase));
 
-                    if (entry.NormalizedWord == "ouir") isVerb = true;
-
                     bool isNotVerb = entry.Definitions.Any(d => !d.CatGram.StartsWith("verbe", StringComparison.InvariantCultureIgnoreCase));
                     thisWords = words.Where(w => w.Parent == entry.Id).ToList();
-
 
                     if (entry.Source.Equals("external") && thisWords.Count > 5) { isVerb = true; }
 

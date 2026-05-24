@@ -1,6 +1,6 @@
 ﻿namespace Crolow.TopMachine.Data.Bridge.Entities.ScrabbleApi
 {
-    public interface ITileConfig
+    public interface ITileConfiguration
     {
         string Char { get; set; }
         bool IsConsonant { get; set; }

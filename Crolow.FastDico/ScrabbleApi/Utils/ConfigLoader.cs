@@ -21,9 +21,9 @@ namespace Crolow.FastDico.ScrabbleApi.Utils
             return pc;
         }
 
-        public static TileConfiguration ReadLetterConfig(ILetterConfigModel letterData)
+        public static TilesConfiguration ReadLetterConfig(ILetterConfigModel letterData)
         {
-            var config = new TileConfiguration();
+            var config = new TilesConfiguration();
 
             config.Name = letterData.Name;
             foreach (var letter in letterData.Letters)

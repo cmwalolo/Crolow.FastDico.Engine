@@ -46,12 +46,6 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds.Evaluators
             public float scoreappui = 0;
         }
 
-        public int[] Tiles_points = new int[]
-        {
-            /* x A B C D  E F G H I J  K L M N O P Q R S T U V  W  X  Y  Z ? */
-            0,1,3,3,2, 1,4,2,4,1,8,10,1,2,1,1,3,8,1,1,1,1,4,10,10,10,10,0
-        };
-
         public Evaluator(CurrentGame currentGame)
         {
             this.currentGame = currentGame;
@@ -75,7 +69,7 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds.Evaluators
                 else
                 {
                     this.config.ScrabbleFrequence = 70;
-                    this.config.CollagesFrequence = 50;
+                    this.config.CollagesFrequence = 40;
                     this.config.AppuisFrequence = 100;
                     this.config.RaccordsFrequence = 60;
                     this.config.RackFrequence = 40;
@@ -214,9 +208,15 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds.Evaluators
 
             int c = round.Tiles.Count(t => t.Parent.Status == 1);
 
+            int runs = round.Tiles
+                .Select((t, i) => new { Tile = t, Index = i })
+                .Count(x =>
+                    x.Tile.Parent.Status == 1 &&
+                    (x.Index == 0 || round.Tiles[x.Index - 1].Parent.Status != 1));
+
             if (c > 1)
             {
-                rate.scoreappui = c;
+                rate.scoreappui = c*runs;
                 rate.scoreAll += rate.scoreappui * config.AppuiRatioMul;
             }
         }

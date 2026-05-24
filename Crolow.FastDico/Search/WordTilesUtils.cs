@@ -7,12 +7,12 @@ namespace Crolow.FastDico.Utils;
 public class WordTilesUtils
 {
     ITilesUtils tilesUtils;
-    ITileConfiguration configuration;
+    ITilesConfiguration configuration;
 
     public WordTilesUtils(ITilesUtils tilesUtils)
     {
         this.tilesUtils = tilesUtils;
-        configuration = tilesUtils.configuration;
+        configuration = tilesUtils.Configuration;
     }
 
     public string ConvertBytesToWordForDisplay(WordResults.Word word)

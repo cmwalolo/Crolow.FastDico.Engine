@@ -15,7 +15,7 @@ public struct Tile
         IsEmpty = true;
     }
 
-    public Tile(ITileConfig tile, Square parent)
+    public Tile(ITileConfiguration tile, Square parent)
     {
         IsEmpty = false;
         Letter = tile.Letter;

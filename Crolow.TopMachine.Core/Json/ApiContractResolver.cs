@@ -25,7 +25,7 @@ namespace Crolow.TopMachine.Core.Json
             {
 
                 // Map interface types to concrete types
-                { } when objectType == typeof(ITileConfig) => base.CreateContract(typeof(TileConfig)),
+                { } when objectType == typeof(ITileConfiguration) => base.CreateContract(typeof(TileConfiguration)),
                 { } when objectType == typeof(IMultiplierData) => base.CreateContract(typeof(MultiplierData)),
                 { } when objectType == typeof(IGameConfigModel) => base.CreateContract(typeof(GameConfigModel)),
                 { } when objectType == typeof(IBoardGridModel) => base.CreateContract(typeof(BoardGridModel)),

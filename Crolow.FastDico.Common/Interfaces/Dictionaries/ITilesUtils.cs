@@ -5,7 +5,7 @@ namespace Crolow.FastDico.Utils
 {
     public interface ITilesUtils
     {
-        ITileConfiguration configuration { get; set; }
+        ITilesConfiguration Configuration { get; set; }
 
         string ConvertBytesToWord(List<byte> byteArray);
         string ConvertBytesToWordForDisplay(List<byte> byteArray, List<byte> jokers = null);

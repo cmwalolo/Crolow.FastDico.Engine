@@ -11,7 +11,6 @@
     /// implementation.</remarks>
     public interface IBaseDictionary : IDisposable
     {
-        int BuildNodeId { get; set; }
         ILetterNode Root { get; }
         ILetterNode RootBuild { get; }
 

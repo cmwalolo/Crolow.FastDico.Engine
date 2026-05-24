@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
+  <Class Name="Crolow.FastDico.GadDag.GadDagDictionary">
+    <Position X="11.25" Y="1" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Crolow.FastDico.Dawg.DawgDictionary">
+    <Position X="11.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Crolow.FastDico.Base.BaseDictionary" Collapsed="true">
+    <Position X="14.25" Y="2" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="Crolow.FastDico.Utils.ITilesUtils">
+    <Position X="7" Y="2" Width="3" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="Crolow.FastDico.Common.Interfaces.Dictionaries.ITilesConfiguration">
+    <Position X="2.25" Y="2.5" Width="2.25" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="Crolow.TopMachine.Data.Bridge.Entities.ScrabbleApi.ITileConfiguration">
+    <Position X="5" Y="2" Width="1.75" />
+    <TypeIdentifier />
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
