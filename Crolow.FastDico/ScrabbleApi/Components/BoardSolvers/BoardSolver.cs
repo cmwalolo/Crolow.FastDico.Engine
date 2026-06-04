@@ -7,6 +7,9 @@ using Crolow.TopMachine.Data.Bridge.Entities.ScrabbleApi;
 
 namespace Crolow.FastDico.ScrabbleApi.Components.BoardSolvers
 {
+    /// <summary>
+    /// Solves playable Scrabble rounds by traversing the dictionary graph against board and rack constraints.
+    /// </summary>
     public class BoardSolver : IBoardSolver
     {
         private CurrentGame currentGame;
@@ -16,11 +19,18 @@ namespace Crolow.FastDico.ScrabbleApi.Components.BoardSolvers
         private IGameConfigModel gameConfig;
         private ILetterNode rootNode;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BoardSolver"/> class.
+        /// </summary>
+        /// <param name="currentGame">Current game context used for board, rack, and dictionary access.</param>
         public BoardSolver(CurrentGame currentGame)
         {
             this.currentGame = currentGame;
         }
 
+        /// <summary>
+        /// Initializes board, game configuration, dictionary root, transposed grid, and pivot masks.
+        /// </summary>
         public void Initialize()
         {
             // Once we get the rack 
@@ -34,6 +44,12 @@ namespace Crolow.FastDico.ScrabbleApi.Components.BoardSolvers
             currentGame.ControllersSetup.PivotBuilder.Build();
         }
 
+        /// <summary>
+        /// Solves all playable rounds for a set of rack letters and optional filters.
+        /// </summary>
+        /// <param name="letters">Rack letters available to play.</param>
+        /// <param name="filters">Optional row or collection filters for the solve operation.</param>
+        /// <returns>A played-rounds container with top, sub-top, and optional all-round results.</returns>
         public PlayedRounds Solve(List<Tile> letters, SolverFilters filters = null)
         {
             filters = filters ?? new SolverFilters();
@@ -66,6 +82,13 @@ namespace Crolow.FastDico.ScrabbleApi.Components.BoardSolvers
             return playedRounds;
         }
 
+        /// <summary>
+        /// Searches one board grid for playable starting positions.
+        /// </summary>
+        /// <param name="grid">Grid index to search.</param>
+        /// <param name="letters">Rack letters available to play.</param>
+        /// <param name="playedRounds">Result container to update.</param>
+        /// <param name="filters">Filters controlling which rows are searched.</param>
         private void Search(int grid, List<Tile> letters, PlayedRounds playedRounds, SolverFilters filters)
         {
             for (var i = 1; i < board.CurrentBoard[grid].SizeV - 1; i++)
@@ -153,6 +176,17 @@ namespace Crolow.FastDico.ScrabbleApi.Components.BoardSolvers
             }
         }
 
+        /// <summary>
+        /// Recursively traverses dictionary nodes while placing rack or board tiles.
+        /// </summary>
+        /// <param name="grid">Grid index being searched.</param>
+        /// <param name="parentNode">Current dictionary node.</param>
+        /// <param name="increment">Horizontal search increment, including reverse traversal after a pivot.</param>
+        /// <param name="p">Current board position.</param>
+        /// <param name="letters">Mutable rack letters still available.</param>
+        /// <param name="rounds">Played-rounds container to update.</param>
+        /// <param name="firstPosition">First position of the candidate word.</param>
+        /// <param name="rightToLeft">Indicates whether reverse traversal through a pivot is allowed.</param>
         private void SearchNodes(int grid, ILetterNode parentNode, int increment, Position p, List<Tile> letters, PlayedRounds rounds, Position firstPosition, bool rightToLeft = true)
         {
             int x = p.X;
@@ -343,6 +377,11 @@ namespace Crolow.FastDico.ScrabbleApi.Components.BoardSolvers
             }
         }
 
+        /// <summary>
+        /// Validates that a submitted solution is a dictionary word, is connected correctly, and uses rack tiles.
+        /// </summary>
+        /// <param name="solution">Solution to validate.</param>
+        /// <returns><c>true</c> when the solution is legal for the current board state.</returns>
         public bool ValidateRound(PlayableSolution solution)
         {
             var isValid = true;
@@ -399,6 +438,13 @@ namespace Crolow.FastDico.ScrabbleApi.Components.BoardSolvers
             return (isValid && isPositionValId && tilesFromRack > 0);
         }
 
+        /// <summary>
+        /// Checks whether a square is adjacent to any already played tile.
+        /// </summary>
+        /// <param name="grid">Grid index to inspect.</param>
+        /// <param name="j">Column coordinate.</param>
+        /// <param name="i">Row coordinate.</param>
+        /// <returns><c>true</c> when at least one adjacent square contains a played tile.</returns>
         private bool CheckConnect(int grid, int j, int i)
         {
             if (board.GetSquare(grid, j - 1, i).Status == 1

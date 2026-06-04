@@ -15,6 +15,10 @@ namespace Crolow.FastDico.GadDag
     /// with SetEnd.</remarks>
     public class GadDagDictionary : BaseDictionary
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GadDagDictionary"/> class.
+        /// </summary>
+        /// <param name="tilesUtils">Utility used to encode inserted words as tile bytes.</param>
         public GadDagDictionary(ITilesUtils tilesUtils) : base(tilesUtils)
         {
         }

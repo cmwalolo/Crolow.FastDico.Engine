@@ -8,6 +8,9 @@ using static Crolow.FastDico.ScrabbleApi.Components.Rounds.Evaluators.Evaluator;
 namespace Crolow.FastDico.ScrabbleApi.Components.Rounds
 {
 
+    /// <summary>
+    /// Extends the base validator with boosted selection and rating logic for difficult games.
+    /// </summary>
     public class XRoundValidator : BaseRoundValidator
     {
 
@@ -24,17 +27,28 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds
         private RatingRound bestRate;
         private PlayedRounds bestRounds;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="XRoundValidator"/> class.
+        /// </summary>
+        /// <param name="currentGame">Current game context to validate.</param>
+        /// <param name="filters">Solver filters used during validation.</param>
         public XRoundValidator(CurrentGame currentGame, SolverFilters filters) : base(currentGame, filters)
         {
             evaluator = new Evaluator(currentGame);
         }
 
 
+        /// <summary>
+        /// Initializes game-level validation state.
+        /// </summary>
         public override void Initialize()
         {
             base.Initialize();
         }
 
+        /// <summary>
+        /// Initializes boosted validation state for a new round.
+        /// </summary>
         public override void InitializeRound()
         {
             currentIteration = 0;
@@ -51,11 +65,20 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds
             }
         }
 
+        /// <summary>
+        /// Determines whether the validator can keep searching for an acceptable round.
+        /// </summary>
+        /// <returns><c>true</c> while boosted mode is active or retry iterations remain.</returns>
         public override bool IsValidGame()
         {
             return evaluator.IsBoosted() || maxIteration[maxIteration.Count() - 1] > 0;
         }
 
+        /// <summary>
+        /// Draws letters for the next solve attempt, using boosted rack sizes when boosted mode is active.
+        /// </summary>
+        /// <param name="rack">Current rack letters to preserve when possible.</param>
+        /// <returns>The letters to solve with, or <c>null</c> when no valid draw is possible.</returns>
         public override List<Tile> InitializeLetters(List<Tile> rack)
         {
             var reject = this.CanRejectBagByDefault(currentGame.GameObjects.GameLetterBag, rack);
@@ -98,17 +121,35 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds
             }
         }
 
+        /// <summary>
+        /// Initializes solver filters according to the current boosted state.
+        /// </summary>
+        /// <param name="pickAll">Ignored by this implementation when boosted state controls result collection.</param>
+        /// <returns>The filters to use for solving.</returns>
         public override SolverFilters InitializeFilters(bool pickAll = false)
         {
             Filters.PickallResults = evaluator.IsBoosted();
             return Filters;
         }
 
+        /// <summary>
+        /// Determines whether the current rack should be rejected before drawing.
+        /// </summary>
+        /// <param name="bag">Letter bag used for validation.</param>
+        /// <param name="rack">Rack letters to inspect.</param>
+        /// <returns><c>true</c> when the rack does not satisfy distribution rules.</returns>
         public override bool CanRejectBagByDefault(LetterBag bag, List<Tile> rack)
         {
             return !bag.IsRackValid(currentGame, rack);
         }
 
+        /// <summary>
+        /// Validates candidate rounds by rating them, applying boosted selection, and falling back across retry tiers.
+        /// </summary>
+        /// <param name="rounds">Candidate rounds to validate.</param>
+        /// <param name="letters">Letters used to produce the rounds.</param>
+        /// <param name="solver">Board solver used for retry validation.</param>
+        /// <returns>The accepted rounds, or <c>null</c> when another attempt is required.</returns>
         public override PlayedRounds ValidateRound(PlayedRounds rounds, List<Tile> letters, IBoardSolver solver)
         {
             if (Filters.ForceStartBoostRound != 0 && currentGame.GameObjects.Round < Filters.ForceStartBoostRound - 1)
@@ -200,6 +241,12 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds
             }
         }
 
+        /// <summary>
+        /// Attempts to select a boosted round that remains a top solution for the resulting rack.
+        /// </summary>
+        /// <param name="playedRounds">Candidate rounds containing all-round boosted results.</param>
+        /// <param name="solver">Board solver used to verify selected boosted racks.</param>
+        /// <returns>The modified played-rounds container with one boosted top, or <c>null</c> when no candidate is accepted.</returns>
         private PlayedRounds ValidateBoosted(PlayedRounds playedRounds, IBoardSolver solver)
         {
 #if DEBUG
@@ -330,11 +377,20 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds
 
         }
 
+        /// <summary>
+        /// Finalizes the accepted played rounds using the base validator behavior.
+        /// </summary>
+        /// <param name="playedRounds">Candidate rounds to finalize.</param>
+        /// <returns>The selected playable solution.</returns>
         public override PlayableSolution FinalizeRound(PlayedRounds playedRounds)
         {
             return base.FinalizeRound(playedRounds);
         }
 
+        /// <summary>
+        /// Writes rating details for a round when debug logging is enabled.
+        /// </summary>
+        /// <param name="round">Rating information to write.</param>
         public void DebugRatingRound(RatingRound round)
         {
 #if DEBUG

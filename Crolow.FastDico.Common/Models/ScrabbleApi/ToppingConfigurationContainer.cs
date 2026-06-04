@@ -1,4 +1,5 @@
 ﻿using Crolow.FastDico.Common.Interfaces.Users;
+using Crolow.FastDico.Common.Models.Dictionary;
 using Crolow.FastDico.Common.Models.ScrabbleApi.Game;
 using Crolow.FastDico.Data.Bridge.Entities.ScrabbleApi;
 using Crolow.TopMachine.Data.Bridge.Entities.ScrabbleApi;
@@ -23,6 +24,7 @@ public class ToppingConfigurationContainer
     public bool IsValid { get; set; }
     public int Count { get; set; }
     public int MaxRounds { get; set; }
+    public DictionaryContainer DicoContainer { get; set; }  
 
     public IGameUserStatisticsModel Statistics { get; set; }
 }

@@ -3,13 +3,34 @@ using Crolow.FastDico.Common.Models.ScrabbleApi.Game;
 
 namespace Crolow.FastDico.Utils;
 
+/// <summary>
+/// Converts between configured Scrabble letters, tile objects, and their compact byte representation.
+/// </summary>
 public class TilesUtils : ITilesUtils
 {
+    /// <summary>
+    /// Gets or sets the tile configuration used for byte, character, and tile lookups.
+    /// </summary>
     public ITilesConfiguration Configuration { get; set; }
 
+    /// <summary>
+    /// Control flag used to mark a node as the end of a word.
+    /// </summary>
     public const byte IsEnd = 1;
+
+    /// <summary>
+    /// Byte marker used to represent the GADDAG pivot character.
+    /// </summary>
     public const byte PivotByte = 255;          // "#"
+
+    /// <summary>
+    /// Byte marker used to represent the multi-character wildcard.
+    /// </summary>
     public const byte WildcardByte = 253;       // "*"
+
+    /// <summary>
+    /// Byte marker used to represent a joker or single-character wildcard.
+    /// </summary>
     public const byte JokerByte = 252;          // "?" 
 
     /// <summary>

@@ -9,10 +9,19 @@ using Kalow.Apps.Common.DataTypes;
 
 namespace Crolow.FastDico.ScrabbleApi.Factories
 {
+    /// <summary>
+    /// Creates and caches dictionary containers with their dictionary, letter configuration, tile utilities, and searcher.
+    /// </summary>
     public class DictionaryContainerFactory : IDictionaryContainerFactory
     {
         private ITopMachineSetting topMachineSettings;
         protected static Dictionary<KalowId, IDictionaryContainer> cache = new Dictionary<KalowId, IDictionaryContainer>();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DictionaryContainerFactory"/> class.
+        /// </summary>
+        /// <param name="serviceFactory">Lazy service facade used to load dictionary data.</param>
+        /// <param name="iTopMachineSettings">Top-machine settings used by the factory.</param>
         public DictionaryContainerFactory(Lazy<IServiceFacadeSwitcher> serviceFactory, ITopMachineSetting iTopMachineSettings)
         {
             this.lazyServiceFactory = serviceFactory;
@@ -21,6 +30,9 @@ namespace Crolow.FastDico.ScrabbleApi.Factories
 
         Lazy<IServiceFacadeSwitcher> lazyServiceFactory;
 
+        /// <summary>
+        /// Gets the service facade resolved from the lazy factory.
+        /// </summary>
         protected IServiceFacadeSwitcher serviceFacade
         {
             get
@@ -31,6 +43,12 @@ namespace Crolow.FastDico.ScrabbleApi.Factories
 
 
 
+        /// <summary>
+        /// Gets a dictionary container for a dictionary id or default language.
+        /// </summary>
+        /// <param name="dictionaryId">Identifier of the dictionary to load, or an empty id to load a default dictionary.</param>
+        /// <param name="language">Language used when selecting a default dictionary.</param>
+        /// <returns>A populated and cached dictionary container.</returns>
         public async Task<IDictionaryContainer> GetContainer(KalowId dictionaryId, string language)
         {
 
@@ -65,6 +83,11 @@ namespace Crolow.FastDico.ScrabbleApi.Factories
             }
         }
 
+        /// <summary>
+        /// Converts a letter configuration model into runtime tile lookup dictionaries.
+        /// </summary>
+        /// <param name="letterData">Letter configuration model to convert.</param>
+        /// <returns>A tile configuration indexed by byte and character.</returns>
         private TilesConfiguration ReadLetterConfig(ILetterConfigModel letterData)
         {
             var config = new TilesConfiguration();

@@ -1,4 +1,5 @@
 ﻿using Crolow.FastDico.Builders.TopMachine;
+using Crolow.FastDico.Common.Enums;
 using Crolow.FastDico.Common.Interfaces.ScrabbleApi;
 using Crolow.FastDico.Common.Interfaces.ScrabbleApi.Services;
 using Crolow.FastDico.Common.Interfaces.Settings;
@@ -13,6 +14,9 @@ using Kalow.Apps.Common.DataTypes;
 
 namespace Crolow.FastDico.ScrabbleApi.Factories
 {
+    /// <summary>
+    /// Creates new games, loaded games, and view-only game contexts for the topping engine.
+    /// </summary>
     public class ToppingFactory : IToppingFactory
     {
         private IDictionaryContainerFactory dictionaryContainerFactory;
@@ -22,6 +26,14 @@ namespace Crolow.FastDico.ScrabbleApi.Factories
         private readonly IServiceFacadeSwitcher facade;
 
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ToppingFactory"/> class.
+        /// </summary>
+        /// <param name="serviceFactory">Lazy service facade used by game operations.</param>
+        /// <param name="dictionaryContainerFactory">Factory used to load dictionary containers.</param>
+        /// <param name="iTopMachineSettings">Top-machine settings used by viewers and exports.</param>
+        /// <param name="gameSerializer">Serializer used to persist game details.</param>
+        /// <param name="facade">Service facade used for persisted games.</param>
         public ToppingFactory(Lazy<IServiceFacadeSwitcher> serviceFactory,
                               IDictionaryContainerFactory dictionaryContainerFactory,
                               ITopMachineSetting iTopMachineSettings,
@@ -37,6 +49,9 @@ namespace Crolow.FastDico.ScrabbleApi.Factories
 
         Lazy<IServiceFacadeSwitcher> lazyServiceFactory;
 
+        /// <summary>
+        /// Gets the service facade resolved from the lazy factory.
+        /// </summary>
         protected IServiceFacadeSwitcher serviceFacade
         {
             get
@@ -45,6 +60,11 @@ namespace Crolow.FastDico.ScrabbleApi.Factories
             }
         }
 
+        /// <summary>
+        /// Creates and initializes a new current game from a topping configuration.
+        /// </summary>
+        /// <param name="container">Configuration container that defines the game, board, filters, and dictionaries.</param>
+        /// <returns>A fully initialized current game ready to start.</returns>
         public async Task<CurrentGame> CreateGameAsync(ToppingConfigurationContainer container)
         {
 
@@ -98,6 +118,11 @@ namespace Crolow.FastDico.ScrabbleApi.Factories
             return CurrentGame;
         }
 
+        /// <summary>
+        /// Converts an existing game into a view-ready game by attaching a base validator.
+        /// </summary>
+        /// <param name="game">Game to convert.</param>
+        /// <returns>The same game instance configured for view usage.</returns>
         public async Task<CurrentGame> ConvertToViewAsync(CurrentGame game)
         {
             game.ControllersSetup.Validator = new BaseRoundValidator(game, null);
@@ -105,6 +130,13 @@ namespace Crolow.FastDico.ScrabbleApi.Factories
         }
 
 
+        /// <summary>
+        /// Loads a persisted game and rebuilds the runtime controllers needed to replay it.
+        /// </summary>
+        /// <param name="model">Persisted game detail model.</param>
+        /// <param name="detail">Persisted user history for the game.</param>
+        /// <param name="configContainer">Configuration container used to rebuild runtime state.</param>
+        /// <returns>A current game configured for replay.</returns>
         public async Task<CurrentGame> LoadGameAsync(IGameDetailModel model, List<IGameUserDetailModel> detail, ToppingConfigurationContainer configContainer)
         {
             var gameConfig = serviceFacade.Current.GameConfigService.LoadAsync(model.GameConfigurationId);

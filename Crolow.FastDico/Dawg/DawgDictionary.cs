@@ -15,6 +15,10 @@ namespace Crolow.FastDico.Dawg;
 /// modifications.</remarks>
 public class DawgDictionary : BaseDictionary
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DawgDictionary"/> class.
+    /// </summary>
+    /// <param name="tilesUtils">Utility used to encode inserted words as tile bytes.</param>
     public DawgDictionary(ITilesUtils tilesUtils) : base(tilesUtils)
     {
     }

@@ -3,12 +3,28 @@ using Crolow.FastDico.Search;
 using Crolow.FastDico.Utils;
 
 namespace Crolow.FastDico.GadDag;
+
+/// <summary>
+/// Performs advanced GADDAG searches that return tile-aware word results.
+/// </summary>
 public class GadDagSearchCore
 {
+    /// <summary>
+    /// Gets the maximum number of results collected by recursive searches.
+    /// </summary>
     public int MaxResults { get; private set; }
     private ILetterNode Root;
+
+    /// <summary>
+    /// Converts between display words and result tiles for this search core.
+    /// </summary>
     public WordTilesUtils wordTilesUtils;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GadDagSearchCore"/> class.
+    /// </summary>
+    /// <param name="container">Dictionary container that supplies the GADDAG root and tile utilities.</param>
+    /// <param name="maxResults">Maximum number of results to collect.</param>
     public GadDagSearchCore(IDictionaryContainer container, int maxResults)
     {
         Root = container.Dico.Root;
@@ -16,7 +32,12 @@ public class GadDagSearchCore
         wordTilesUtils = new WordTilesUtils(container.TilesUtils);
     }
 
-    // Anagramic searches From Letters + 1, Greater, smaller
+    /// <summary>
+    /// Finds words that can be formed from the mandatory letters plus optional letters.
+    /// </summary>
+    /// <param name="pattern">Mandatory letters or joker markers.</param>
+    /// <param name="optional">Optional letters or joker markers.</param>
+    /// <returns>Tile-aware words that consume all required letters.</returns>
     public WordResults FindAllWordsFromLetters(string pattern, string optional)
     {
         var letters = wordTilesUtils.ConvertWordToBytes(pattern.ToUpper(), optional.ToLower());
@@ -27,6 +48,12 @@ public class GadDagSearchCore
         return results;
     }
 
+    /// <summary>
+    /// Finds words that can be built from the supplied letters and are shorter than the original pattern.
+    /// </summary>
+    /// <param name="pattern">Letters available for the search.</param>
+    /// <param name="minLength">Minimum word length to keep.</param>
+    /// <returns>Words built from the supplied letters with the requested minimum length.</returns>
     public WordResults FindAllWordsSmaller(string pattern, int minLength = 0)
     {
         var letters = wordTilesUtils.ConvertWordToBytes(pattern.ToUpper(), "");
@@ -38,6 +65,12 @@ public class GadDagSearchCore
         return results;
     }
 
+    /// <summary>
+    /// Finds words that can be built by adding up to <paramref name="maxLength"/> joker letters to a pattern.
+    /// </summary>
+    /// <param name="pattern">Base letters available for the search.</param>
+    /// <param name="maxLength">Number of optional joker expansion passes.</param>
+    /// <returns>Words that are greater than the base pattern by optional joker additions.</returns>
     public WordResults FindAllWordsGreater(string pattern, int maxLength)
     {
         var results = new WordResults();
@@ -52,6 +85,11 @@ public class GadDagSearchCore
         return results;
     }
 
+    /// <summary>
+    /// Finds all words that contain the supplied pattern anywhere in the word.
+    /// </summary>
+    /// <param name="pattern">Pattern that must appear in the result.</param>
+    /// <returns>Words containing the supplied pattern.</returns>
     public WordResults FindAllWordsContaining(string pattern)
     {
         string search = $"*{pattern.ToUpper()}*";
@@ -62,6 +100,11 @@ public class GadDagSearchCore
         return results;
     }
 
+    /// <summary>
+    /// Finds all words that match the supplied wildcard pattern.
+    /// </summary>
+    /// <param name="pattern">Pattern to match, where wildcards are converted by <see cref="WordTilesUtils"/>.</param>
+    /// <returns>Words that match the pattern.</returns>
     public WordResults FindAllWordsWithPattern(string pattern)
     {
         var letters = wordTilesUtils.ConvertWordToBytes(pattern.ToUpper(), "");
@@ -71,6 +114,11 @@ public class GadDagSearchCore
         return results;
     }
 
+    /// <summary>
+    /// Finds words related to the search pattern by exact match, replacement, insertion, removal, move, or inversion.
+    /// </summary>
+    /// <param name="searchPattern">Base word used for comparison.</param>
+    /// <returns>Words annotated with the transformation status that connects them to the base word.</returns>
     public WordResults FindAllWordsMoreOrLess(string searchPattern)
     {
         var results = new WordResults();
@@ -127,6 +175,14 @@ public class GadDagSearchCore
     }
 
     #region Pattern search 
+    /// <summary>
+    /// Recursively searches the graph for a tile-aware wildcard pattern.
+    /// </summary>
+    /// <param name="currentNode">Current graph node.</param>
+    /// <param name="bytePattern">Pattern represented as result tiles.</param>
+    /// <param name="patternIndex">Current index in the pattern.</param>
+    /// <param name="currentWord">Mutable candidate word.</param>
+    /// <param name="results">Collection that receives matching words.</param>
     private void SearchByPatternRecursive(ILetterNode currentNode, List<WordResults.ResultTile> bytePattern, int patternIndex, WordResults.Word currentWord, WordResults results)
     {
         // Base case: Reached the end of the pattern
@@ -186,7 +242,14 @@ public class GadDagSearchCore
     #endregion
 
     #region Anagram search
-    // Recursive helper for both functions
+    /// <summary>
+    /// Recursively builds words from the available result tiles.
+    /// </summary>
+    /// <param name="currentNode">Current graph node.</param>
+    /// <param name="availableLetters">Tiles still available for consumption.</param>
+    /// <param name="currentWord">Mutable candidate word.</param>
+    /// <param name="results">Collection that receives matching words.</param>
+    /// <param name="requireExactMatch">Indicates whether every available tile must be consumed.</param>
     private void FindWordsUsingLetters(
         ILetterNode currentNode,
         List<WordResults.ResultTile> availableLetters,

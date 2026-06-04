@@ -2,6 +2,9 @@
 
 namespace Crolow.FastDico.GadDag
 {
+    /// <summary>
+    /// Compares two words and identifies which single-edit transformations relate them.
+    /// </summary>
     public static class WordResultEvaluator
     {
         //static void Main()
@@ -16,6 +19,12 @@ namespace Crolow.FastDico.GadDag
         //    }
         //}
 
+        /// <summary>
+        /// Compares a base word with another word and returns flags for supported transformation types.
+        /// </summary>
+        /// <param name="baseWord">Original word used as the comparison baseline.</param>
+        /// <param name="word">Candidate word to compare with the baseline.</param>
+        /// <returns>A bit array whose positions describe move, inversion, replacement, insertion, and removal matches.</returns>
         public static BitArray CompareWords(string baseWord, string word)
         {
             BitArray bitSet = new BitArray(6);
@@ -27,6 +36,12 @@ namespace Crolow.FastDico.GadDag
             return bitSet;
         }
 
+        /// <summary>
+        /// Determines whether the candidate can be produced by moving one letter in the base word.
+        /// </summary>
+        /// <param name="baseWord">Original word.</param>
+        /// <param name="word">Candidate word.</param>
+        /// <returns><c>true</c> when one moved letter transforms the original word into the candidate.</returns>
         static bool CanMoveOneLetter(string baseWord, string word)
         {
             if (baseWord.Length != word.Length) return false;
@@ -53,6 +68,12 @@ namespace Crolow.FastDico.GadDag
             return false;
         }
 
+        /// <summary>
+        /// Determines whether the candidate can be produced by swapping two letters in the base word.
+        /// </summary>
+        /// <param name="baseWord">Original word.</param>
+        /// <param name="word">Candidate word.</param>
+        /// <returns><c>true</c> when exactly two positions are inverted.</returns>
         static bool CanInvertTwoLetters(string baseWord, string word)
         {
             if (baseWord.Length != word.Length) return false;
@@ -72,11 +93,23 @@ namespace Crolow.FastDico.GadDag
             return diffCount == 2 && baseWord[diffIndexes[0]] == word[diffIndexes[1]] && baseWord[diffIndexes[1]] == word[diffIndexes[0]];
         }
 
+        /// <summary>
+        /// Determines whether the candidate can be produced by replacing one letter in the base word.
+        /// </summary>
+        /// <param name="baseWord">Original word.</param>
+        /// <param name="word">Candidate word.</param>
+        /// <returns><c>true</c> when the words have the same length and differ at exactly one position.</returns>
         static bool CanReplaceOneLetter(string baseWord, string word)
         {
             return baseWord.Length == word.Length && baseWord.Zip(word, (a, b) => a != b).Count(x => x) == 1;
         }
 
+        /// <summary>
+        /// Determines whether the candidate can be produced by inserting one letter into the base word.
+        /// </summary>
+        /// <param name="baseWord">Original word.</param>
+        /// <param name="word">Candidate word.</param>
+        /// <returns><c>true</c> when the candidate contains exactly one additional letter.</returns>
         static bool CanInsertOneLetter(string baseWord, string word)
         {
             if (word.Length != baseWord.Length + 1) return false;
@@ -105,6 +138,12 @@ namespace Crolow.FastDico.GadDag
         }
 
 
+        /// <summary>
+        /// Determines whether the candidate can be produced by removing one letter from the base word.
+        /// </summary>
+        /// <param name="baseWord">Original word.</param>
+        /// <param name="word">Candidate word.</param>
+        /// <returns><c>true</c> when removing one letter from the base word yields the candidate.</returns>
         static bool CanRemoveOneLetter(string baseWord, string word)
         {
             return CanInsertOneLetter(word, baseWord);

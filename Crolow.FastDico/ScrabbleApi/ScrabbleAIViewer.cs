@@ -9,6 +9,9 @@ using System.Text;
 
 namespace Crolow.FastDico.ScrabbleApi;
 
+/// <summary>
+/// Serializes, exports, and replays Scrabble games for viewing and persisted-game workflows.
+/// </summary>
 public class ScrabbleAIViewer : IScrabbleAIViewer
 {
     private CurrentGame CurrentGame;
@@ -17,6 +20,15 @@ public class ScrabbleAIViewer : IScrabbleAIViewer
     private readonly ITopMachineSetting topMachineSettings;
     private readonly IGameSerializer gameSerializer;
     private readonly IServiceFacadeSwitcher facade;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ScrabbleAIViewer"/> class.
+    /// </summary>
+    /// <param name="detailModel">Current persisted game model, when one is already loaded.</param>
+    /// <param name="currentGame">Runtime game state to view or serialize.</param>
+    /// <param name="iTopMachineSettings">Settings used for export paths.</param>
+    /// <param name="gameSerializer">Serializer used to create persisted game models.</param>
+    /// <param name="facade">Service facade used to update persisted games.</param>
     public ScrabbleAIViewer(IGameDetailModel detailModel, CurrentGame currentGame, ITopMachineSetting iTopMachineSettings, IGameSerializer gameSerializer, IServiceFacadeSwitcher facade)
     {
         this.CurrentGame = currentGame;
@@ -25,6 +37,12 @@ public class ScrabbleAIViewer : IScrabbleAIViewer
         this.gameSerializer = gameSerializer;
         this.facade = facade;
     }
+
+    /// <summary>
+    /// Serializes the current game and optionally stores it through the game service.
+    /// </summary>
+    /// <param name="storeGame">Indicates whether the serialized game should be persisted.</param>
+    /// <returns>The serialized game detail model.</returns>
     public async Task<IGameDetailModel> SerializeGame(bool storeGame)
     {
         currentLoadedGame = gameSerializer.GetGame(CurrentGame);
@@ -36,6 +54,9 @@ public class ScrabbleAIViewer : IScrabbleAIViewer
         return currentLoadedGame;
     }
 
+    /// <summary>
+    /// Serializes the current user's game history and appends it to the runtime history collection.
+    /// </summary>
     public async void SerializeUser()
     {
         var userModel = gameSerializer.GetGameUser(currentLoadedGame, CurrentGame);
@@ -47,6 +68,10 @@ public class ScrabbleAIViewer : IScrabbleAIViewer
         CurrentGame.History.Users.Add(userModel);
     }
 
+    /// <summary>
+    /// Exports the current game board and round history as an HTML file.
+    /// </summary>
+    /// <param name="doConsole">Indicates whether console output should be included by callers.</param>
     public void ExportHtml(bool doConsole = true)
     {
         var tilesUtils = CurrentGame.ControllersSetup.DictionaryContainer.TilesUtils;
@@ -122,6 +147,13 @@ public class ScrabbleAIViewer : IScrabbleAIViewer
         System.IO.File.WriteAllText($"{path}\\output-{dm.ToString("yyMMdd-hhmmss")}.html", sb.ToString());
         // We are done 
     }
+
+    /// <summary>
+    /// Replays the board up to a given round and recomputes available solutions for that round.
+    /// </summary>
+    /// <param name="round">Round index to replay.</param>
+    /// <param name="max">Maximum number of best rounds to finalize for inspection.</param>
+    /// <returns>The recomputed played-rounds container.</returns>
     public PlayedRounds ReplayRound(int round, int max = 100000)
     {
         var b = CurrentGame.GameObjects.Board;

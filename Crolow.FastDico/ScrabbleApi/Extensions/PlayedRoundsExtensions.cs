@@ -2,8 +2,16 @@
 
 namespace Crolow.FastDico.ScrabbleApi.Extensions;
 
+/// <summary>
+/// Provides scoring and ranking helpers for played Scrabble rounds.
+/// </summary>
 public static class PlayedRoundsExtensions
 {
+    /// <summary>
+    /// Scores a playable solution and updates top, sub-top, and optional all-round collections.
+    /// </summary>
+    /// <param name="p">Played-rounds container to update.</param>
+    /// <param name="round">Round to score and classify.</param>
     public static void SetRound(this PlayedRounds p, PlayableSolution round)
     {
         int wm = 1;

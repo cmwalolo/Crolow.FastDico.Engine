@@ -1,5 +1,8 @@
 ﻿namespace Crolow.TopMachine.Core.Extensions
 {
+    /// <summary>
+    /// Provides conversion helpers for game detail models.
+    /// </summary>
     public static class GameDetailExtensions
     {
         /*public static IGameDetailModel ToReadable(this GameDetail gameDetail, ITilesUtils utils)

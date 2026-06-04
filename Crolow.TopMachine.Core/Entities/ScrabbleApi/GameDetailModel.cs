@@ -15,6 +15,7 @@ public class GameDetailModel : DataObject, IGameDetailModel
     public DateTime DateTime { get; set; } = DateTime.UtcNow;
     public string ConfigurationName { get; set; } = string.Empty;
     public KpiRateSummary KpiRateSummary { get; set; } = new KpiRateSummary();
+    public List<KeyValuePair<string, Exception>> ConsoleBuffer { get; set; } = new List<KeyValuePair<string, Exception>>(); 
 
     public GameDetailModel()
     {

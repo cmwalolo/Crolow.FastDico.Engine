@@ -31,6 +31,10 @@ public class BaseDictionary : IBaseDictionary
     private Dictionary<string, ILetterNode> nodeCache;
     protected ITilesUtils tilesUtils;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BaseDictionary"/> class.
+    /// </summary>
+    /// <param name="tilesUtils">Utility used to convert words and tiles to their byte representation.</param>
     public BaseDictionary(ITilesUtils tilesUtils)
     {
         Root = new LetterNode();
@@ -333,6 +337,9 @@ public class BaseDictionary : IBaseDictionary
         }
     }
 
+    /// <summary>
+    /// Releases the in-memory graph references and clears the subtree cache.
+    /// </summary>
     public void Dispose()
     {
         Root?.Children.Clear();

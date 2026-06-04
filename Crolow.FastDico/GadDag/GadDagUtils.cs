@@ -4,8 +4,18 @@ using Crolow.FastDico.Utils;
 
 namespace Crolow.FastDico.GadDag
 {
+    /// <summary>
+    /// Provides utility operations for checking words and one-letter extensions in a GADDAG graph.
+    /// </summary>
     public class GadDagUtils
     {
+        /// <summary>
+        /// Recursively follows a byte-encoded word through the graph.
+        /// </summary>
+        /// <param name="currentNode">Current graph node.</param>
+        /// <param name="word">Word represented as tile bytes.</param>
+        /// <param name="index">Current byte index.</param>
+        /// <returns>The terminal node when the word is found; otherwise, <c>null</c>.</returns>
         private ILetterNode SearchWordRecursive(ILetterNode currentNode, List<byte> word, int index)
         {
             if (index == word.Count)
@@ -30,6 +40,13 @@ namespace Crolow.FastDico.GadDag
             return null;
         }
 
+        /// <summary>
+        /// Finds one-letter prefixes and suffixes that can extend an existing word.
+        /// </summary>
+        /// <param name="tilesUtils">Tile utility used to encode and decode letters.</param>
+        /// <param name="rootNode">Root node of the GADDAG graph.</param>
+        /// <param name="word">Word to extend.</param>
+        /// <returns>Pairs where the key identifies the side and the value contains the extension letter.</returns>
         public List<KeyValuePair<int, string>> FindPlusOne(ITilesUtils tilesUtils, ILetterNode rootNode, string word)
         {
             var bytes = tilesUtils.ConvertWordToBytes(word);
@@ -58,6 +75,12 @@ namespace Crolow.FastDico.GadDag
             return result;
         }
 
+        /// <summary>
+        /// Checks whether the supplied tile sequence exists as a word in the graph.
+        /// </summary>
+        /// <param name="rootNode">Root node of the GADDAG graph.</param>
+        /// <param name="tiles">Tiles that form the candidate word.</param>
+        /// <returns><c>true</c> when the tile sequence is present as a terminal word.</returns>
         public bool CheckWord(ILetterNode rootNode, List<Tile> tiles)
         {
             var bytes = tiles.Select(p => p.Letter).ToList();

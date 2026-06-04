@@ -3,6 +3,9 @@ using Crolow.FastDico.Utils;
 
 namespace Crolow.FastDico.Dicos;
 
+/// <summary>
+/// Represents a node in a letter graph used by DAWG and GADDAG dictionaries.
+/// </summary>
 public class LetterNode : ILetterNode
 {
     /// <summary>

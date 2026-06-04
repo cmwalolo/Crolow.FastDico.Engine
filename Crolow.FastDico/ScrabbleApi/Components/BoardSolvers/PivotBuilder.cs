@@ -13,6 +13,9 @@ using System.Text;
 
 namespace Crolow.FastDico.ScrabbleApi.Components.BoardSolvers
 {
+    /// <summary>
+    /// Builds cross-word pivot masks for empty squares on the Scrabble board.
+    /// </summary>
     public class PivotBuilder : IPivotBuilder
     {
         private Dictionary<string, uint> PivotCache = new Dictionary<string, uint>();
@@ -22,6 +25,10 @@ namespace Crolow.FastDico.ScrabbleApi.Components.BoardSolvers
         private PlayConfiguration playConfiguration;
         private CurrentGame currentGame;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PivotBuilder"/> class.
+        /// </summary>
+        /// <param name="currentGame">Current game that supplies the board and dictionary context.</param>
         public PivotBuilder(CurrentGame currentGame)
         {
             this.currentGame = currentGame;
@@ -32,17 +39,32 @@ namespace Crolow.FastDico.ScrabbleApi.Components.BoardSolvers
             PivotCache.Clear();
         }
 
+        /// <summary>
+        /// Gets the pivot masks recorded for a board square.
+        /// </summary>
+        /// <param name="x">Column coordinate.</param>
+        /// <param name="y">Row coordinate.</param>
+        /// <param name="direction">Grid direction to inspect.</param>
+        /// <returns>The pivot mask array for the requested square.</returns>
         public uint[] GetMask(int x, int y, int direction)
         {
             return board.GetSquare(direction, x, y).Pivots;
         }
 
+        /// <summary>
+        /// Builds pivot masks for both horizontal and vertical grids.
+        /// </summary>
         public void Build()
         {
             Build(0, 1);
             Build(1, 0);
         }
 
+        /// <summary>
+        /// Builds pivot masks from one grid into its target transposed grid.
+        /// </summary>
+        /// <param name="grid">Source grid index to scan.</param>
+        /// <param name="targetGrid">Target grid index whose pivot data is updated.</param>
         public void Build(int grid, int targetGrid)
         {
             for (int y = 1; y < board.CurrentBoard[0].SizeV - 1; y++)
@@ -59,12 +81,32 @@ namespace Crolow.FastDico.ScrabbleApi.Components.BoardSolvers
 
         }
 
+        /// <summary>
+        /// Describes a contiguous run of occupied squares and the empty square being tested beside it.
+        /// </summary>
+        /// <param name="toRight">Indicates whether the run extends to the right.</param>
+        /// <param name="start">Start coordinate of the run.</param>
+        /// <param name="end">End coordinate of the run.</param>
         private struct Run(bool toRight, int start, int end)
         {
+            /// <summary>
+            /// Indicates whether the run extends to the right.
+            /// </summary>
             public bool toRight = toRight;
+
+            /// <summary>
+            /// Gets the start and end coordinates of the run.
+            /// </summary>
             public int start = start, end = end;
         }
 
+        /// <summary>
+        /// Finds occupied horizontal runs and solves pivot masks for adjacent empty squares.
+        /// </summary>
+        /// <param name="grid">Source grid index.</param>
+        /// <param name="targetGrid">Target grid index to update.</param>
+        /// <param name="squares">Squares in the scanned row.</param>
+        /// <param name="y">Row coordinate being scanned.</param>
         private void MaskLeftToRightHorizontal(int grid, int targetGrid, Square[] squares, int y)
         {
             int startX = 1;
@@ -144,6 +186,13 @@ namespace Crolow.FastDico.ScrabbleApi.Components.BoardSolvers
 
         }
 
+        /// <summary>
+        /// Solves the allowed letters for one pivot position inside a run.
+        /// </summary>
+        /// <param name="grid">Source grid index.</param>
+        /// <param name="targetGrid">Target grid index to update.</param>
+        /// <param name="run">Run that contains the pivot square.</param>
+        /// <param name="squares">Squares in the scanned row.</param>
         private void Solve(int grid, int targetGrid, Run run, Square[] squares)
         {
             var start = run.start;
@@ -214,6 +263,11 @@ namespace Crolow.FastDico.ScrabbleApi.Components.BoardSolvers
 
         }
 
+        /// <summary>
+        /// Searches dictionary words matching a fixed-length byte pattern with joker slots.
+        /// </summary>
+        /// <param name="bytePattern">Pattern bytes where joker bytes represent open pivot slots.</param>
+        /// <returns>Matching byte words.</returns>
         public List<byte[]> SearchByPattern(byte[] bytePattern)
         {
             // Convert the pattern into bytes
@@ -222,6 +276,14 @@ namespace Crolow.FastDico.ScrabbleApi.Components.BoardSolvers
             return results;
         }
 
+        /// <summary>
+        /// Recursively searches the dictionary graph for a pivot pattern.
+        /// </summary>
+        /// <param name="currentNode">Current dictionary node.</param>
+        /// <param name="bytePattern">Pattern bytes to match.</param>
+        /// <param name="patternIndex">Current index in the pattern.</param>
+        /// <param name="currentWord">Mutable buffer for the candidate word.</param>
+        /// <param name="results">Collection that receives matching byte words.</param>
         private void SearchByPatternRecursive(ILetterNode currentNode, byte[] bytePattern, int patternIndex, byte[] currentWord, List<byte[]> results)
         {
             // Base case: Reached the end of the pattern

@@ -20,7 +20,8 @@ namespace Crolow.FastDico.Builders.TopMachine
                 TotalPoints = game.GameObjects.Rounds.TotalPoints,
                 Users = new List<KalowId>(), // To be filled
                 Rounds = new List<IPlayableSolutionModel>(),
-                EditState = Crolow.TopMachine.Data.Bridge.EditState.New
+                EditState = Crolow.TopMachine.Data.Bridge.EditState.New,
+                ConsoleBuffer = game.DebugInfo.ToList()
             };
 
             int totalPoints = 0;

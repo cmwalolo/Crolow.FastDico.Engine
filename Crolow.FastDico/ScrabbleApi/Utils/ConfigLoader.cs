@@ -6,13 +6,28 @@ using Crolow.TopMachine.Data.Bridge.Entities.ScrabbleApi;
 
 namespace Crolow.FastDico.ScrabbleApi.Utils
 {
+    /// <summary>
+    /// Builds play, grid, and tile configurations from top-machine configuration models.
+    /// </summary>
     public class ConfigLoader
     {
+        /// <summary>
+        /// Contains board-grid data loaded from configuration.
+        /// </summary>
         public class BoardData
         {
+            /// <summary>
+            /// Gets or sets the board grid model.
+            /// </summary>
             public IBoardGridModel Grid { get; set; }
         }
 
+        /// <summary>
+        /// Reads the play configuration for a game.
+        /// </summary>
+        /// <param name="config">Topping configuration container to read.</param>
+        /// <param name="dictionaryContainer">Dictionary container that supplies the letter configuration.</param>
+        /// <returns>A populated play configuration.</returns>
         public PlayConfiguration ReadConfiguration(ToppingConfigurationContainer config, IDictionaryContainer dictionaryContainer)
         {
             PlayConfiguration pc = new PlayConfiguration();
@@ -21,6 +36,11 @@ namespace Crolow.FastDico.ScrabbleApi.Utils
             return pc;
         }
 
+        /// <summary>
+        /// Converts a letter configuration model into the runtime tile configuration maps.
+        /// </summary>
+        /// <param name="letterData">Letter configuration model to convert.</param>
+        /// <returns>A tile configuration indexed by byte and character.</returns>
         public static TilesConfiguration ReadLetterConfig(ILetterConfigModel letterData)
         {
             var config = new TilesConfiguration();
@@ -34,6 +54,13 @@ namespace Crolow.FastDico.ScrabbleApi.Utils
             return config;
         }
 
+        /// <summary>
+        /// Fills a play configuration with grid and tile configuration data.
+        /// </summary>
+        /// <param name="config">Topping configuration container that includes board setup.</param>
+        /// <param name="pc">Play configuration to populate.</param>
+        /// <param name="dictionaryContainer">Dictionary container that supplies the letter configuration.</param>
+        /// <returns>The populated play configuration.</returns>
         public static PlayConfiguration FillGridConfig(ToppingConfigurationContainer config, PlayConfiguration pc, IDictionaryContainer dictionaryContainer)
         {
             pc.TileConfig = ReadLetterConfig(dictionaryContainer.LetterConfig);

@@ -35,6 +35,8 @@ namespace Crolow.FastDico.Data.Bridge.Entities.ScrabbleApi
         int TotalPoints { get; set; }
         float PlayTime { get; set; }
         DateTime DateTime { get; set; }
+        List<KeyValuePair<string, Exception>> ConsoleBuffer { get; set; }
+
 
     }
 

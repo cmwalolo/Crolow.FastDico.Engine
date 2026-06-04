@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Crolow.FastDico.ScrabbleApi.ScrabbleAI" Collapsed="true">
+    <Position X="0.5" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAAAIAAAAAAAAIgIAAgQAAAAEAAAAAAAAASACA=</HashCode>
+      <FileName>ScrabbleApi\ScrabbleAI.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="BaseRoundValidator" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Crolow.FastDico.ScrabbleApi.Components.BoardSolvers.BoardSolver" Collapsed="true">
+    <Position X="4" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAEAEABAAQAAAAAgAAAIAAAAAAAAIAAAAAAkAAA=</HashCode>
+      <FileName>ScrabbleApi\Components\BoardSolvers\BoardSolver.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Crolow.FastDico.ScrabbleApi.Components.BoardSolvers.PivotBuilder" Collapsed="true">
+    <Position X="2.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QIAAAAEAAAAAAYAAAAQAAAAIAAAAgAQAIAAAAAAAACA=</HashCode>
+      <FileName>ScrabbleApi\Components\BoardSolvers\PivotBuilder.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Crolow.FastDico.ScrabbleApi.Components.Rounds.BaseRoundValidator" Collapsed="true">
+    <Position X="3" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAEIAgACAQAAAIAgAAIAgAAAAAAAAIACECACACA=</HashCode>
+      <FileName>ScrabbleApi\Components\Rounds\BaseRoundValidator.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="BoardSolver" />
+      <Property Name="RoundEvaluator" />
+      <Property Name="Evaluator" />
+      <Property Name="PivotBuilder" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Crolow.FastDico.ScrabbleApi.Components.Rounds.Evaluators.Evaluator" Collapsed="true">
+    <Position X="6" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACACAAEAAIIAAQggAAAAAoEAAAAAAAAIACgAgIAAAKw=</HashCode>
+      <FileName>ScrabbleApi\Components\Rounds\Evaluators\Evaluator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Crolow.FastDico.ScrabbleApi.Components.Rounds.Evaluators.RoundEvaluator" Collapsed="true">
+    <Position X="6" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAAAAAAAAEAAAgAAAAAAAAAAAAAAAAQAAAE=</HashCode>
+      <FileName>ScrabbleApi\Components\Rounds\Evaluators\RoundEvaluator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

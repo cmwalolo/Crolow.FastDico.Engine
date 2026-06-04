@@ -7,45 +7,145 @@ using System.Collections;
 
 namespace Crolow.FastDico.ScrabbleApi.Components.Rounds.Evaluators
 {
+    /// <summary>
+    /// Legacy round evaluator that rates rounds with hard-coded scoring ratios and frequencies.
+    /// </summary>
     public class OldEvaluator
     {
         private CurrentGame currentGame;
+
+        /// <summary>
+        /// Compares rated rounds by their overall score.
+        /// </summary>
         public class RoundsComparer : IComparer
         {
-            // Calls CaseInsensitiveComparer.Compare with the parameters reversed.
+            /// <summary>
+            /// Compares two rating rounds.
+            /// </summary>
+            /// <param name="x">First rating round.</param>
+            /// <param name="y">Second rating round.</param>
+            /// <returns>A comparison value based on the overall score.</returns>
             int IComparer.Compare(object x, object y)
             {
                 return ((RatingRound)x).scoreAll < ((RatingRound)y).scoreAll ? 0 : 1;
             }
         }
 
+        /// <summary>
+        /// Indicates whether collage scoring should be applied.
+        /// </summary>
         public bool DoCollages = false;
+
+        /// <summary>
+        /// Indicates whether scrabble bonus scoring should be encouraged.
+        /// </summary>
         public bool DoScrabble = false;
+
+        /// <summary>
+        /// Indicates whether hook support scoring should be applied.
+        /// </summary>
         public bool DoAppuis = false;
+
+        /// <summary>
+        /// Indicates whether raccord scoring should be applied.
+        /// </summary>
         public bool DoRaccords = false;
+
+        /// <summary>
+        /// Indicates whether rack-quality scoring should be applied.
+        /// </summary>
         public bool DoRack = false;
+
+        /// <summary>
+        /// Indicates whether boosted selection is active.
+        /// </summary>
         public bool DoBoost = false;
+
+        /// <summary>
+        /// Indicates whether rating should be skipped for the current round.
+        /// </summary>
         public bool DoSkip = false;
 
 
+        /// <summary>
+        /// Holds individual score components for a rated round.
+        /// </summary>
         public class RatingRound
         {
+            /// <summary>
+            /// Indicates whether the solve produced no results.
+            /// </summary>
             public bool NoResults = false;
+
+            /// <summary>
+            /// Indicates whether the rated round is valid.
+            /// </summary>
             public bool Valid = true;
+
+            /// <summary>
+            /// Indicates whether the rated rack should be rejected.
+            /// </summary>
             public bool rejet = false;
+
+            /// <summary>
+            /// Gets the number of top solutions in the solve result.
+            /// </summary>
             public int nbSolutions = 0;
+
+            /// <summary>
+            /// Gets the number of draws evaluated.
+            /// </summary>
             public int nbTirages = 0;
+
+            /// <summary>
+            /// Gets the normalized overall score.
+            /// </summary>
             public float scoreAll = 0;
+
+            /// <summary>
+            /// Gets the rack-quality score component.
+            /// </summary>
             public float scorerack = 1;
+
+            /// <summary>
+            /// Gets the sub-top score component.
+            /// </summary>
             public float scoresoustop = 0;
+
+            /// <summary>
+            /// Gets the scrabble bonus score component.
+            /// </summary>
             public float scorescrabble = 0;
+
+            /// <summary>
+            /// Gets the raccord score component.
+            /// </summary>
             public float scoreraccords = 0;
+
+            /// <summary>
+            /// Gets the collage score component.
+            /// </summary>
             public float scorecollage = 0;
+
+            /// <summary>
+            /// Gets the collage word-count score component.
+            /// </summary>
             public float scorecollagemots = 0;
+
+            /// <summary>
+            /// Gets the word-length score component.
+            /// </summary>
             public float scoremot = 0;
+
+            /// <summary>
+            /// Gets the support-hook score component.
+            /// </summary>
             public float scoreappui = 0;
         }
 
+        /// <summary>
+        /// Gets legacy tile points indexed by letter byte.
+        /// </summary>
         public int[] Tiles_points = new int[]
         {
 			    /* x A B C D  E F G H I J  K L M N O P Q R S T U V  W  X  Y  Z ? */
@@ -53,28 +153,97 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds.Evaluators
         };
 
 
+        /// <summary>
+        /// Gets the divisor used for scrabble sub-top scoring.
+        /// </summary>
         public const float SousTopRatioScrabbleDiv = 50;
+
+        /// <summary>
+        /// Gets the divisor used for sub-top scoring.
+        /// </summary>
         public const float sousTopRatioDiv = 20;
+
+        /// <summary>
+        /// Gets the multiplier used for word-length scoring.
+        /// </summary>
         public const float ScoreMotRatioMul = 1;
 
+        /// <summary>
+        /// Gets the multiplier used for rack scoring.
+        /// </summary>
         public const float RackRatioMult = 1;           // Multiplier
+
+        /// <summary>
+        /// Gets the divisor used for scrabble bonus scoring.
+        /// </summary>
         public const float ScrabbleRatioDiv = 25;
+
+        /// <summary>
+        /// Gets the multiplier used for raccord scoring.
+        /// </summary>
         public const float RaccordsRatioMul = 1;
+
+        /// <summary>
+        /// Gets the multiplier used for collage scoring.
+        /// </summary>
         public const float CollageRatioMul = 1.5f;
+
+        /// <summary>
+        /// Gets the multiplier used for appui scoring.
+        /// </summary>
         public const float AppuiRatioMul = 15f;
 
+        /// <summary>
+        /// Gets or sets the random frequency for encouraging scrabble bonuses.
+        /// </summary>
         public int ScrabbleFrequence = 60;
+
+        /// <summary>
+        /// Gets or sets the random frequency for appui scoring.
+        /// </summary>
         public int AppuisFrequence = 80;
+
+        /// <summary>
+        /// Gets or sets the random frequency for collage scoring.
+        /// </summary>
         public int CollagesFrequence = 80;
+
+        /// <summary>
+        /// Gets or sets the random frequency for raccord scoring.
+        /// </summary>
         public int RaccordsFrequence = 80;
+
+        /// <summary>
+        /// Gets or sets the random frequency for rack-quality scoring.
+        /// </summary>
         public int RackFrequence = 40;
+
+        /// <summary>
+        /// Gets or sets the random frequency for boosted selection.
+        /// </summary>
         public int BoostFrequence = -1;
+
+        /// <summary>
+        /// Gets or sets the random frequency for skipping rating.
+        /// </summary>
         public int SkipFrequence = 10;
+
+        /// <summary>
+        /// Gets or sets the round after which normal boost frequency applies.
+        /// </summary>
         public int StartBoostRound = 2;
+
+        /// <summary>
+        /// Gets or sets the boost frequency before or at the start boost round.
+        /// </summary>
         public int StartBoostFrequence = 30;
 
         private int maxTurn = 30;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OldEvaluator"/> class.
+        /// </summary>
+        /// <param name="currentGame">Current game context used for configuration and dictionary access.</param>
         public OldEvaluator(CurrentGame currentGame)
 
         {
@@ -108,16 +277,26 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds.Evaluators
 
         }
 
+        /// <summary>
+        /// Gets a value indicating whether boosted selection is active.
+        /// </summary>
+        /// <returns><c>true</c> when boosted selection is active.</returns>
         public bool IsBoosted()
         {
             return DoBoost;
         }
 
+        /// <summary>
+        /// Disables boosted selection for the current evaluation cycle.
+        /// </summary>
         public void BoostedOff()
         {
             DoBoost = false;
         }
 
+        /// <summary>
+        /// Initializes random evaluation switches for the current round.
+        /// </summary>
         public void Initialize()
         {
 
@@ -185,6 +364,12 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds.Evaluators
 
         }
 
+        /// <summary>
+        /// Evaluates a played-rounds collection or a selected round and returns its rating details.
+        /// </summary>
+        /// <param name="round">Played-rounds collection to evaluate.</param>
+        /// <param name="selectedRound">Optional selected round; defaults to the first top solution.</param>
+        /// <returns>The rating result for the selected round.</returns>
         public RatingRound Evaluate(PlayedRounds round, PlayableSolution selectedRound = null)
         {
             float maxScore = 0;
@@ -253,17 +438,21 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds.Evaluators
         }
 
         /// <summary>
-        /// Evaluate number of solutions possible 
-        /// This will be a ratio that will decrease the global rating 
-        /// If multiple solutions 
+        /// Records the number of top solutions in the rating.
         /// </summary>
-        /// <param name="rate"></param>
-        /// <param name="round"></param>
+        /// <param name="rate">Rating to update.</param>
+        /// <param name="round">Played-rounds collection being evaluated.</param>
         private void EvaluateNumberOfSolutions(RatingRound rate, PlayedRounds round)
         {
             rate.nbSolutions = round.Tops.Count;
         }
 
+        /// <summary>
+        /// Scores the candidate word based on length and minimum newly placed letters.
+        /// </summary>
+        /// <param name="rate">Rating to update.</param>
+        /// <param name="round">Round being evaluated.</param>
+        /// <param name="word">Display word for the round.</param>
         private void EvaluateScoreMot(RatingRound rate, PlayableSolution round, string word)
         {
             //if (round.Bonus == 0)
@@ -295,6 +484,12 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds.Evaluators
             }
         }
 
+        /// <summary>
+        /// Scores the support created by existing board tiles used in the candidate word.
+        /// </summary>
+        /// <param name="rate">Rating to update.</param>
+        /// <param name="round">Round being evaluated.</param>
+        /// <param name="word">Display word for the round.</param>
         private void EvaluateScoreAppui(RatingRound rate, PlayableSolution round, string word)
         {
             if (round.Tiles.Count(p => p.Parent.Status != 1) < 5)
@@ -320,6 +515,12 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds.Evaluators
             }
         }
 
+        /// <summary>
+        /// Scores parallel-word collage opportunities created by newly placed tiles.
+        /// </summary>
+        /// <param name="rate">Rating to update.</param>
+        /// <param name="round">Round being evaluated.</param>
+        /// <param name="word">Display word for the round.</param>
         private void EvaluateCollages(RatingRound rate, PlayableSolution round, string word)
         {
             if (word.Length < 5)
@@ -351,6 +552,13 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds.Evaluators
                 rate.scoreAll += ((float)rate.scorecollage * rate.scorecollagemots * CollageRatioMul);
             }
         }
+
+        /// <summary>
+        /// Scores raccord opportunities for extending the played word.
+        /// </summary>
+        /// <param name="rate">Rating to update.</param>
+        /// <param name="round">Round being evaluated.</param>
+        /// <param name="word">Display word for the round.</param>
         private void EvaluateRaccords(RatingRound rate, PlayableSolution round, string word)
         {
             if (word.Length > 4)
@@ -361,6 +569,13 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds.Evaluators
             }
         }
 
+        /// <summary>
+        /// Penalizes candidate rounds that leave a weak rack behind.
+        /// </summary>
+        /// <param name="rate">Rating to update.</param>
+        /// <param name="round">Round being evaluated.</param>
+        /// <param name="word">Display word for the round.</param>
+        /// <param name="subTop">Best sub-top solution used as a comparison baseline.</param>
         private void EvaluateRack(RatingRound rate, PlayableSolution round, string word, PlayableSolution subTop)
         {
             rate.scorerack = 1;
@@ -391,6 +606,13 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds.Evaluators
             }
         }
 
+        /// <summary>
+        /// Scores or penalizes scrabble bonus usage depending on the current evaluation goal.
+        /// </summary>
+        /// <param name="rate">Rating to update.</param>
+        /// <param name="round">Round being evaluated.</param>
+        /// <param name="word">Display word for the round.</param>
+        /// <param name="doScrabble">Indicates whether scrabble bonuses are encouraged.</param>
         private void EvaluateScrabble(RatingRound rate, PlayableSolution round, string word, bool doScrabble)
         {
             if (round.Bonus > 0)
@@ -409,6 +631,13 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds.Evaluators
             }
         }
 
+        /// <summary>
+        /// Scores the gap between a scrabble top and its sub-top.
+        /// </summary>
+        /// <param name="rate">Rating to update.</param>
+        /// <param name="round">Round being evaluated.</param>
+        /// <param name="word">Display word for the round.</param>
+        /// <param name="subTop">Sub-top solution used as a baseline.</param>
         private void EvaluateScrabbleSousTop(RatingRound rate, PlayableSolution round, string word, PlayableSolution subTop)
         {
             if (round.Bonus > 0)
@@ -419,6 +648,13 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds.Evaluators
             }
         }
 
+        /// <summary>
+        /// Scores the gap between a top and its sub-top.
+        /// </summary>
+        /// <param name="rate">Rating to update.</param>
+        /// <param name="round">Round being evaluated.</param>
+        /// <param name="word">Display word for the round.</param>
+        /// <param name="subTop">Sub-top solution used as a baseline.</param>
         private void EvaluateSousTop(RatingRound rate, PlayableSolution round, string word, PlayableSolution subTop)
         {
             float diff = 100 - subTop.Points / (float)round.Points * 100;
@@ -427,6 +663,11 @@ namespace Crolow.FastDico.ScrabbleApi.Components.Rounds.Evaluators
         }
 
 
+        /// <summary>
+        /// Counts possible one-letter raccords before and after a word.
+        /// </summary>
+        /// <param name="word">Word to test for raccord opportunities.</param>
+        /// <returns>The number of prefix and suffix raccord matches.</returns>
         private int CompteRaccord(string word)
         {
             GadDagSearch search = new GadDagSearch(currentGame.ControllersSetup.DictionaryContainer.Dico.Root, currentGame.ControllersSetup.DictionaryContainer.TilesUtils);

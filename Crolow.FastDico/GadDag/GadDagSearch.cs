@@ -3,17 +3,38 @@ using Crolow.FastDico.Utils;
 
 namespace Crolow.FastDico.GadDag;
 
+/// <summary>
+/// Searches words in a GADDAG dictionary using exact, prefix, suffix, pattern, and rack-letter queries.
+/// </summary>
 public class GadDagSearch : IDicoSearch
 {
+    /// <summary>
+    /// Gets the root node of the GADDAG graph.
+    /// </summary>
     public ILetterNode Root { get; private set; }
+
+    /// <summary>
+    /// Gets the tile utility used to encode and decode words.
+    /// </summary>
     public ITilesUtils tilesUtils { get; private set; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GadDagSearch"/> class.
+    /// </summary>
+    /// <param name="root">Root node of the GADDAG graph.</param>
+    /// <param name="tilesUtils">Tile utility used for word conversion.</param>
     public GadDagSearch(ILetterNode root, ITilesUtils tilesUtils)
     {
         Root = root;
         this.tilesUtils = tilesUtils;
     }
 
+    /// <summary>
+    /// Finds all words whose length falls within the supplied range.
+    /// </summary>
+    /// <param name="minLength">Minimum accepted word length.</param>
+    /// <param name="maxLength">Maximum accepted word length.</param>
+    /// <returns>Words found in the dictionary within the requested range.</returns>
     public List<string> SearchAllWords(int minLength, int maxLength)
     {
         var results = new List<string>();
@@ -21,6 +42,15 @@ public class GadDagSearch : IDicoSearch
         return results;
     }
 
+    /// <summary>
+    /// Recursively traverses non-pivot nodes and collects terminal words.
+    /// </summary>
+    /// <param name="currentNode">Current graph node.</param>
+    /// <param name="word">Mutable word byte buffer.</param>
+    /// <param name="results">Collection that receives matching words.</param>
+    /// <param name="minLength">Minimum accepted word length.</param>
+    /// <param name="maxLength">Maximum accepted word length.</param>
+    /// <returns>Always returns <c>false</c>; results are written to <paramref name="results"/>.</returns>
     private bool SearchAllWordsRecursive(ILetterNode currentNode, List<byte> word, List<string> results, int minLength, int maxLength)
     {
         if (currentNode.IsEnd)
@@ -47,17 +77,34 @@ public class GadDagSearch : IDicoSearch
         return false;
     }
 
+    /// <summary>
+    /// Determines whether the dictionary contains the specified word.
+    /// </summary>
+    /// <param name="word">Word to search for.</param>
+    /// <returns><c>true</c> when the word is present as a terminal graph path.</returns>
     public bool SearchWord(string word)
     {
         var bytes = tilesUtils.ConvertWordToBytes(word.ToUpper());
         return SearchWordRecursive(Root, bytes, 0);
     }
 
+    /// <summary>
+    /// Determines whether the dictionary contains the specified byte-encoded word.
+    /// </summary>
+    /// <param name="word">Word represented as tile bytes.</param>
+    /// <returns><c>true</c> when the byte sequence is present as a terminal graph path.</returns>
     public bool SearchWord(List<byte> word)
     {
         return SearchWordRecursive(Root, word, 0);
     }
 
+    /// <summary>
+    /// Recursively follows a byte-encoded word through the graph.
+    /// </summary>
+    /// <param name="currentNode">Current graph node.</param>
+    /// <param name="word">Word represented as tile bytes.</param>
+    /// <param name="index">Current index in the word.</param>
+    /// <returns><c>true</c> when the traversal ends on a terminal node.</returns>
     private bool SearchWordRecursive(ILetterNode currentNode, List<byte> word, int index)
     {
         if (index == word.Count)
@@ -82,6 +129,12 @@ public class GadDagSearch : IDicoSearch
         return false;
     }
 
+    /// <summary>
+    /// Finds words that begin with the supplied prefix.
+    /// </summary>
+    /// <param name="prefix">Prefix to match.</param>
+    /// <param name="maxLength">Maximum number of additional letters to explore.</param>
+    /// <returns>Words that start with the prefix.</returns>
     public List<string> SearchByPrefix(string prefix, int maxLength = int.MaxValue)
     {
         var bytes = tilesUtils.ConvertWordToBytes(prefix.ToUpper());
@@ -101,6 +154,13 @@ public class GadDagSearch : IDicoSearch
         return results;
     }
 
+    /// <summary>
+    /// Collects prefix matches reachable from a prefix node.
+    /// </summary>
+    /// <param name="node">Node at the end of the prefix.</param>
+    /// <param name="currentWord">Mutable word byte buffer.</param>
+    /// <param name="results">Collection that receives matching words.</param>
+    /// <param name="length">Remaining depth to explore.</param>
     private void SearchPrefixesFromNode(ILetterNode node, List<byte> currentWord, List<string> results, int length)
     {
         if (node.IsEnd && length >= 0)
@@ -125,6 +185,12 @@ public class GadDagSearch : IDicoSearch
     }
 
 
+    /// <summary>
+    /// Finds words that end with the supplied suffix.
+    /// </summary>
+    /// <param name="suffix">Suffix to match.</param>
+    /// <param name="maxLength">Maximum number of additional letters to explore.</param>
+    /// <returns>Words that end with the suffix.</returns>
     public List<string> SearchBySuffix(string suffix, int maxLength = int.MaxValue)
     {
         var patternedSuffix = suffix.ToUpper() + "#";
@@ -146,6 +212,14 @@ public class GadDagSearch : IDicoSearch
         return results;
     }
 
+    /// <summary>
+    /// Collects suffix matches from a GADDAG pivot traversal.
+    /// </summary>
+    /// <param name="node">Current graph node.</param>
+    /// <param name="currentWord">Encoded suffix path including the pivot.</param>
+    /// <param name="result">Mutable prefix buffer built in reverse.</param>
+    /// <param name="results">Collection that receives matching words.</param>
+    /// <param name="length">Remaining depth to explore.</param>
     private void SearchSuffixesFromNode(ILetterNode node, List<byte> currentWord, List<byte> result, List<string> results, int length)
     {
         if (node.IsEnd && length >= 0)
@@ -165,6 +239,13 @@ public class GadDagSearch : IDicoSearch
         }
     }
 
+    /// <summary>
+    /// Finds words that match a pattern containing optional wildcard characters.
+    /// </summary>
+    /// <param name="pattern">Pattern to match, where <c>*</c> matches zero or more letters and <c>?</c> matches one letter.</param>
+    /// <param name="minLength">Minimum accepted word length.</param>
+    /// <param name="maxLength">Maximum accepted word length.</param>
+    /// <returns>Words that match the provided pattern and length constraints.</returns>
     public List<string> SearchByPattern(string pattern, int minLength = int.MinValue, int maxLength = int.MaxValue)
     {
         // Convert the pattern into bytes
@@ -174,6 +255,16 @@ public class GadDagSearch : IDicoSearch
         return results;
     }
 
+    /// <summary>
+    /// Recursively evaluates a byte pattern against the GADDAG graph.
+    /// </summary>
+    /// <param name="currentNode">Current graph node.</param>
+    /// <param name="bytePattern">Pattern encoded as tile bytes and wildcard bytes.</param>
+    /// <param name="patternIndex">Current index in the pattern.</param>
+    /// <param name="currentWord">Mutable word byte buffer.</param>
+    /// <param name="results">Collection that receives matching words.</param>
+    /// <param name="minLength">Minimum accepted word length.</param>
+    /// <param name="maxLength">Maximum accepted word length.</param>
     private void SearchByPatternRecursive(ILetterNode currentNode, List<byte> bytePattern, int patternIndex, List<byte> currentWord, List<string> results, int minLength, int maxLength)
     {
         // Base case: Reached the end of the pattern
@@ -236,6 +327,11 @@ public class GadDagSearch : IDicoSearch
         }
     }
 
+    /// <summary>
+    /// Converts a textual search pattern into configured tile bytes and wildcard marker bytes.
+    /// </summary>
+    /// <param name="pattern">Pattern containing letters, <c>*</c>, or <c>?</c>.</param>
+    /// <returns>The byte representation of the pattern.</returns>
     private List<byte> ConvertPatternToBytes(string pattern)
     {
         List<byte> bytePattern = new List<byte>();
@@ -251,7 +347,11 @@ public class GadDagSearch : IDicoSearch
         return bytePattern;
     }
 
-    // Function 1: Find all words that can be formed using exactly the given letters
+    /// <summary>
+    /// Finds words that can be formed using exactly the provided letters.
+    /// </summary>
+    /// <param name="pattern">Letters available in the rack, with optional joker markers.</param>
+    /// <returns>Words that consume all provided letters.</returns>
     public List<string> FindAllWordsFromLetters(string pattern)
     {
         var letters = tilesUtils.ConvertWordToBytes(pattern.ToUpper());
@@ -261,7 +361,11 @@ public class GadDagSearch : IDicoSearch
         return results;
     }
 
-    // Function 2: Find all words that contain at least one of the given letters
+    /// <summary>
+    /// Finds words that can be formed from at least some of the provided letters.
+    /// </summary>
+    /// <param name="pattern">Letters available in the rack, with optional joker markers.</param>
+    /// <returns>Words that can be built from the supplied letters.</returns>
     public List<string> FindAllWordsContainingLetters(string pattern)
     {
         var letters = tilesUtils.ConvertWordToBytes(pattern.ToUpper());
@@ -270,7 +374,15 @@ public class GadDagSearch : IDicoSearch
         return results;
     }
 
-    // Recursive helper for both functions
+    /// <summary>
+    /// Recursively builds candidate words from a mutable pool of available letters.
+    /// </summary>
+    /// <param name="currentNode">Current graph node.</param>
+    /// <param name="availableLetters">Letters that can still be consumed.</param>
+    /// <param name="currentWord">Current candidate word bytes.</param>
+    /// <param name="currentJokers">Per-letter joker flags used for display formatting.</param>
+    /// <param name="results">Collection that receives matching display words.</param>
+    /// <param name="requireExactMatch">Indicates whether all available letters must be consumed.</param>
     private void FindWordsUsingLetters(
         ILetterNode currentNode,
         List<byte> availableLetters,

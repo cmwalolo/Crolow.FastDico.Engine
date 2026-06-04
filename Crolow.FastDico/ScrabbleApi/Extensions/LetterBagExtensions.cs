@@ -6,18 +6,21 @@ using System.Text;
 
 namespace Crolow.FastDico.ScrabbleApi.Extensions;
 
+/// <summary>
+/// Provides helper methods for drawing, validating, and mutating letters in a Scrabble bag.
+/// </summary>
 public static class LetterBagExtensions
 {
     static Random RandomGen = Random.Shared;
 
     /// <summary>
-    /// For the boosted version we Filter the bag to not have more then 2 letters the same
-    /// to prevent numerous identical solutions to be solved.
+    /// Filters a drawn rack for boosted searches by limiting duplicate letters and jokers.
     /// </summary>
-    /// <param name="b"></param>
-    /// <param name="rack"></param>
-    /// <param name="maxJokers"></param>
-    /// <returns></returns>
+    /// <param name="b">Letter bag used as the extension target.</param>
+    /// <param name="game">Current game context that defines rack size rules.</param>
+    /// <param name="rack">Drawn rack to filter.</param>
+    /// <param name="maxJokers">Maximum number of jokers to keep.</param>
+    /// <returns>A filtered rack that avoids excessive duplicate letters and jokers.</returns>
     public static List<Tile> Filter(this LetterBag b, CurrentGame game, List<Tile> rack, int maxJokers = 0)
     {
         int inRackLetters = game.GameObjects.GameConfig.InRackLetters;
@@ -54,6 +57,16 @@ public static class LetterBagExtensions
         return drawnLetters;
     }
 
+    /// <summary>
+    /// Draws letters from the bag while preserving optional rack letters and rack-validity rules.
+    /// </summary>
+    /// <param name="b">Letter bag to draw from.</param>
+    /// <param name="game">Current game context.</param>
+    /// <param name="inRackTiles">Tiles already present in the rack.</param>
+    /// <param name="totalLetters">Total number of letters to draw; uses the configured rack size when zero.</param>
+    /// <param name="reject">Indicates whether invalid initial racks should be rejected before drawing.</param>
+    /// <param name="forceInitialTiles">Indicates whether the supplied rack tiles must be kept.</param>
+    /// <returns>A valid drawn rack, or <c>null</c> when no valid draw is possible.</returns>
     public static List<Tile> DrawLetters(this LetterBag b, CurrentGame game, List<Tile> inRackTiles, int totalLetters = 0, bool reject = false, bool forceInitialTiles = false)
     {
         // Can we still make a valid rack ?
@@ -148,6 +161,11 @@ public static class LetterBagExtensions
         return drawnLetters;
     }
 
+    /// <summary>
+    /// Removes a matching tile from the bag.
+    /// </summary>
+    /// <param name="b">Letter bag to update.</param>
+    /// <param name="tile">Tile to remove.</param>
     public static void RemoveTile(this LetterBag b, Tile tile)
     {
         var i = b.Letters.FindIndex(t => (!tile.IsJoker && !t.IsJoker && t.Letter == tile.Letter) || t.IsJoker && tile.IsJoker);
@@ -158,6 +176,12 @@ public static class LetterBagExtensions
         b.Letters.RemoveAt(i);
     }
 
+    /// <summary>
+    /// Removes and returns the first tile matching a letter byte.
+    /// </summary>
+    /// <param name="b">Letter bag to update.</param>
+    /// <param name="letter">Letter byte to remove, or the joker byte to remove a joker.</param>
+    /// <returns>The removed tile, or an empty tile when no match is found.</returns>
     public static Tile RemoveTile(this LetterBag b, byte letter)
     {
         var i = b.Letters.FindIndex(t => t.Letter == letter || letter == TilesUtils.JokerByte && t.IsJoker);
@@ -170,6 +194,11 @@ public static class LetterBagExtensions
         return t;
     }
 
+    /// <summary>
+    /// Removes each supplied tile from the bag when a matching tile exists.
+    /// </summary>
+    /// <param name="b">Letter bag to update.</param>
+    /// <param name="tiles">Tiles to remove.</param>
     public static void RemoveTiles(this LetterBag b, List<Tile> tiles)
     {
         foreach (var tile in tiles)
@@ -183,8 +212,13 @@ public static class LetterBagExtensions
         }
     }
 
-    // Get the number of letters remaining in the bag
-
+    /// <summary>
+    /// Determines whether a rack satisfies the current vowel, consonant, and joker distribution rules.
+    /// </summary>
+    /// <param name="b">Letter bag used for fallback distribution checks.</param>
+    /// <param name="game">Current game context.</param>
+    /// <param name="letters">Rack letters to validate.</param>
+    /// <returns><c>true</c> when the rack distribution is valid for the current game state.</returns>
     public static bool IsRackValid(this LetterBag b, CurrentGame game, List<Tile> letters)
     {
         var tileConfig = game.GameObjects.Configuration.TileConfig;
@@ -224,6 +258,12 @@ public static class LetterBagExtensions
         return result;
     }
 
+    /// <summary>
+    /// Determines whether the remaining bag still contains at least one vowel and one consonant.
+    /// </summary>
+    /// <param name="b">Letter bag to validate.</param>
+    /// <param name="game">Current game context.</param>
+    /// <returns><c>true</c> when the bag can still produce a valid distribution.</returns>
     public static bool IsValid(this LetterBag b, CurrentGame game)
     {
         var tileConfig = game.GameObjects.Configuration.TileConfig;
@@ -236,6 +276,12 @@ public static class LetterBagExtensions
         return vow > 0 && con > 0;
     }
 
+    /// <summary>
+    /// Removes the supplied tiles from a copied bag view and returns the original tile list.
+    /// </summary>
+    /// <param name="b">Letter bag used to check availability.</param>
+    /// <param name="tiles">Tiles to force into the draw.</param>
+    /// <returns>The supplied tile list.</returns>
     public static List<Tile> ForceDrawLetters(this LetterBag b, List<Tile> tiles)
     {
         var bagLetters = b.Letters.ToList();
@@ -251,6 +297,13 @@ public static class LetterBagExtensions
         return tiles;
     }
 
+    /// <summary>
+    /// Builds a forced draw from a word by matching each character against the remaining bag letters.
+    /// </summary>
+    /// <param name="b">Letter bag to inspect.</param>
+    /// <param name="game">Current game context used to resolve letter configuration.</param>
+    /// <param name="word">Word whose letters should be drawn.</param>
+    /// <returns>Tiles matching the supplied word in order.</returns>
     public static List<Tile> ForceDrawLetters(this LetterBag b, CurrentGame game, string word)
     {
         var letters = b.Letters.ToList();
@@ -269,6 +322,13 @@ public static class LetterBagExtensions
         return tiles;
     }
 
+    /// <summary>
+    /// Replaces a played joker with an equivalent non-joker tile from the bag when available.
+    /// </summary>
+    /// <param name="b">Letter bag to inspect.</param>
+    /// <param name="tile">Tile that may be replaced.</param>
+    /// <param name="drawnLetters">Letters already drawn for the rack.</param>
+    /// <returns>The replacement tile when available; otherwise, the original tile.</returns>
     public static Tile ReplaceJoker(this LetterBag b, Tile tile, List<Tile> drawnLetters)
     {
         if (tile.IsJoker)
@@ -297,6 +357,12 @@ public static class LetterBagExtensions
         return tile;
     }
 
+    /// <summary>
+    /// Writes debug information about the current bag and rack state.
+    /// </summary>
+    /// <param name="b">Letter bag to describe.</param>
+    /// <param name="gg">Current game context.</param>
+    /// <param name="rack">Rack to include in the debug output.</param>
     public static void DebugBag(this LetterBag b, CurrentGame gg, PlayerRack rack)
     {
 #if DEBUG
