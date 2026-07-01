@@ -26,5 +26,7 @@ https://www.facebook.com/profile.php?id=61582287357805
 For any information and credits : crolow.fastdico at outlook.com
 And if you want to support me, donations are welcome. 
 
+More explanations on my blog : https://www.crolow.net/fr/blog/sections/skrabby-un-moteur-de-scrabble/
+It's in French for now, but you can use a translator or wait for the translations to come
 
 [![](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/donate/?hosted_button_id=GXN5ACMFKDSF6)
